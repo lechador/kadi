@@ -23,9 +23,17 @@ const idlPath = resolve(appRoot, "../target/idl/kadi.json");
 const outDir = resolve(appRoot, "src/generated");
 const tmpDir = resolve(appRoot, ".codama-tmp");
 
+// The generated client is committed, so a missing IDL is only fatal when there
+// is nothing to fall back on. This matters on hosts that build from the `app/`
+// directory alone (Vercel's Root Directory setting excludes ../target by
+// default) — there the committed output is exactly what should be used.
 if (!existsSync(idlPath)) {
+  if (existsSync(resolve(outDir, "index.ts"))) {
+    console.log("  IDL not present — using the committed client in src/generated");
+    process.exit(0);
+  }
   console.error(
-    `\n  Anchor IDL not found at ${idlPath}\n` +
+    `\n  Anchor IDL not found at ${idlPath}, and src/generated is empty.\n` +
       `  Build the program first:  npm --prefix .. run build:program\n`
   );
   process.exit(1);
