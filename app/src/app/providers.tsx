@@ -7,6 +7,7 @@ import { ClientProvider } from "@solana/react";
 
 import { CHAIN, RPC_URL, WS_URL } from "@/lib/config";
 import { LanguageProvider } from "@/lib/i18n";
+import { SessionProvider } from "@/lib/session";
 
 export const client = createClient()
   .use(walletSigner({ chain: CHAIN }))
@@ -21,7 +22,9 @@ export default function Providers({
 }) {
   return (
     <LanguageProvider>
-      <ClientProvider client={client}>{children}</ClientProvider>
+      <ClientProvider client={client}>
+        <SessionProvider>{children}</SessionProvider>
+      </ClientProvider>
     </LanguageProvider>
   );
 }

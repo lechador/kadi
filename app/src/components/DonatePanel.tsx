@@ -7,6 +7,7 @@ import { donateSol, donateToken } from "@/lib/actions";
 import { explorerTx } from "@/lib/config";
 import { formatTokenAmount, parseTokenAmount } from "@/lib/format";
 import { useAsync, useKadiClient, useWallet } from "@/lib/hooks";
+import { reportSignature } from "@/lib/live";
 import { fetchTokenBalance, type KadiRpc } from "@/lib/queries";
 import { isNativeMint, tokenFor } from "@/lib/tokens";
 import { useLanguage } from "@/lib/i18n";
@@ -109,6 +110,10 @@ export function DonatePanel({
       const result = await client.sendTransaction([instruction]);
       setSignature(result.context.signature);
       setMessage("");
+      // Tell the index about this transaction straight away, so the donor sees
+      // their own donation in the ledger and on the leaderboard rather than
+      // waiting for the next sweep to notice it.
+      reportSignature(result.context.signature);
       onDonated?.();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : t("donationFailed"));

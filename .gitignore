@@ -28,3 +28,4 @@ app/.env*.local
 *.pem
 *-keypair.json
 keys/
+.vercel

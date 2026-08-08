@@ -41,6 +41,11 @@
   --red: #c63d2f;
   --green: #2e5b45;
   --rule: rgba(23, 23, 20, 0.18);
+
+  /* Chart marks only. A step more saturated than --green because a 9px column
+     needs more chroma than a word does to read as coloured rather than grey —
+     the text mint measures below the chroma floor at bar width. */
+  --chart-green: #1f7a52;
 }
 
 * {

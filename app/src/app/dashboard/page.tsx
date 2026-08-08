@@ -9,6 +9,10 @@ import { StatusPill } from "@/components/GoalCard";
 import { Nav } from "@/components/Nav";
 import { ProgressBar } from "@/components/ProgressBar";
 import { WalletButton } from "@/components/WalletButton";
+import { Analytics } from "@/components/dashboard/Analytics";
+import { OverlayEditor } from "@/components/dashboard/OverlayEditor";
+import { ProfileEditor } from "@/components/dashboard/ProfileEditor";
+import { SignInBar } from "@/components/dashboard/SignInBar";
 import { GoalStatus, type Creator, type Goal } from "@/generated";
 import {
   claimSol,
@@ -37,6 +41,7 @@ import {
 } from "@/lib/queries";
 import { SUPPORTED_TOKENS, isNativeMint, tokenFor } from "@/lib/tokens";
 import { useLanguage } from "@/lib/i18n";
+import type { GoalView, ProfileView } from "@/lib/views";
 
 export default function DashboardPage() {
   const { t } = useLanguage();
@@ -226,6 +231,37 @@ function CreatorDashboard({
   const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
 
+  const profile = useAsync(async () => {
+    const response = await fetch(
+      `/api/creators/${encodeURIComponent(handle)}/profile`
+    );
+    if (!response.ok) return null;
+    const body = (await response.json()) as { profile: ProfileView | null };
+    return body.profile;
+  }, [handle]);
+
+  // The overlay's goal picker only needs titles and indexes, so the decoded
+  // accounts are narrowed to the view shape rather than threaded through.
+  const goalOptions: GoalView[] = goals.map((goal) => ({
+    address: goal.address,
+    creatorAddress: goal.data.creator,
+    handle,
+    creatorName: creator.data.displayName,
+    creatorAvatar: null,
+    index: Number(goal.data.index),
+    title: goal.data.title,
+    description: goal.data.description,
+    mint: goal.data.mint,
+    target: goal.data.target.toString(),
+    raised: goal.data.raised.toString(),
+    claimed: goal.data.claimed.toString(),
+    donationCount: Number(goal.data.donationCount),
+    supporterCount: Number(goal.data.supporterCount),
+    status: Number(goal.data.status),
+    deadline: null,
+    createdAt: Number(goal.data.createdAt),
+  }));
+
   return (
     <>
       <section className="mb-8 border-y border-black/20 bg-ink-850 p-7 sm:p-10">
@@ -292,20 +328,22 @@ function CreatorDashboard({
               {copied ? t("copied") : t("copy")}
             </button>
           </div>
-          <p className="mt-3 text-xs text-mist-600">
-            {t("settingUp")}{" "}
-            <a
-              href={`${overlayUrl}?test=1`}
-              target="_blank"
-              rel="noreferrer"
-              className="text-grape-400 hover:underline"
-            >
-              {t("openTestAlert")}
-            </a>{" "}
-            {t("testBeforeLive")}
-          </p>
+        </div>
+
+        <div className="mt-6">
+          <SignInBar />
         </div>
       </section>
+
+      <div className="mb-8 space-y-8">
+        <Analytics handle={handle} />
+        <ProfileEditor handle={handle} initial={profile.data ?? null} />
+        <OverlayEditor
+          handle={handle}
+          goals={goalOptions}
+          overlayUrl={overlayUrl}
+        />
+      </div>
 
       <CreateGoalForm
         creator={creator.address}

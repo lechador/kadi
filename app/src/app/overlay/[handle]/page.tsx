@@ -1,22 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 
 import { ProgressBar } from "@/components/ProgressBar";
-import { KADI_PROGRAM_ADDRESS, type Goal } from "@/generated";
-import { parseDonationEvents, type DonationEvent } from "@/lib/events";
-import { formatSol, shortAddress } from "@/lib/format";
+import type { Goal } from "@/generated";
+import { formatTokenAmount, shortAddress } from "@/lib/format";
 import { useAsync, useKadiClient } from "@/lib/hooks";
+import { useLiveDonations, type LiveDonation } from "@/lib/live";
 import { fetchCreatorByHandle, fetchCreatorGoals } from "@/lib/queries";
+import { tokenFor } from "@/lib/tokens";
 import { useLanguage } from "@/lib/i18n";
+import { DEFAULT_OVERLAY_SETTINGS, type OverlaySettingsView } from "@/lib/views";
 
-const HOLD_MS = 5_200;
 const EXIT_MS = 380;
 
-/// Transparent OBS browser source. It subscribes directly to the program's
-/// logs, so an alert fires the moment a donation is confirmed — there is no
-/// webhook, backend or polling loop between the chain and the stream.
+/// Transparent OBS browser source.
+///
+/// The alert path is unchanged and deliberately so: it subscribes straight to
+/// the program's logs, so a donation appears on stream the moment it confirms —
+/// no webhook, no poll, nothing between the chain and the scene. What the
+/// database added is only how the source *looks*: colour, duration, sound, the
+/// minimum that earns an interruption. A creator changes those in the dashboard
+/// instead of editing the URL in OBS mid-stream.
+///
+/// The page is also the protocol's most reliable indexer client. It runs for
+/// the length of a broadcast, so it is the thing most likely to be watching
+/// when a Solana Pay QR donation lands with no browser of its own to report it.
 export default function OverlayPage() {
   const { t } = useLanguage();
   const params = useParams<{ handle: string }>();
@@ -24,17 +34,12 @@ export default function OverlayPage() {
   const handle = params.handle;
   const client = useKadiClient();
 
-  const showBar = search.get("bar") !== "0";
-  const goalIndex = search.get("goal");
-  /// `?test=1` adds a trigger so a creator can confirm their OBS browser
-  /// source is wired up without waiting for a real donation. It is opt-in so
-  /// the button can never appear on a live stream.
-  const testMode = search.get("test") === "1";
-
-  const [queue, setQueue] = useState<DonationEvent[]>([]);
-  const [current, setCurrent] = useState<DonationEvent | null>(null);
+  const [settings, setSettings] = useState<OverlaySettingsView>(
+    DEFAULT_OVERLAY_SETTINGS
+  );
+  const [queue, setQueue] = useState<LiveDonation[]>([]);
+  const [current, setCurrent] = useState<LiveDonation | null>(null);
   const [leaving, setLeaving] = useState(false);
-  const [connected, setConnected] = useState(false);
 
   // OBS composites the page over the scene, so the document itself must not
   // paint a background.
@@ -63,42 +68,58 @@ export default function OverlayPage() {
     );
   }, [client, creator.data]);
 
-  const creatorAddress = creator.data?.address;
+  const creatorAddress = creator.data?.address ?? null;
 
-  // --- live subscription ---------------------------------------------------
   useEffect(() => {
-    if (!creatorAddress) return;
-    const controller = new AbortController();
+    let live = true;
+    fetch(`/api/creators/${encodeURIComponent(handle)}/overlay`)
+      .then((response) => response.json())
+      .then((body: { settings: OverlaySettingsView }) => {
+        if (live && body.settings) setSettings(body.settings);
+      })
+      .catch(() => {
+        // Defaults are already on screen; a source that keeps working with the
+        // stock look beats one that goes blank because a fetch failed.
+      });
+    return () => {
+      live = false;
+    };
+  }, [handle]);
 
-    (async () => {
-      try {
-        const notifications = await client.rpcSubscriptions
-          .logsNotifications(
-            { mentions: [KADI_PROGRAM_ADDRESS] },
-            { commitment: "confirmed" }
-          )
-          .subscribe({ abortSignal: controller.signal });
+  // The URL still wins. A creator troubleshooting mid-stream should be able to
+  // override a stored setting without going back to the dashboard, and the
+  // documented `?goal=` / `?bar=0` links stay valid.
+  const showBar = search.get("bar") !== "0" && settings.showBar;
+  const pinnedGoal = search.get("goal") ?? settings.pinnedGoalIndex;
+  const testMode = search.get("test") === "1";
 
-        setConnected(true);
+  const trackedGoal: Goal | undefined = useMemo(() => {
+    const list = goals.data ?? [];
+    if (pinnedGoal !== null && pinnedGoal !== undefined) {
+      const found = list.find(
+        (goal) => goal.data.index === BigInt(pinnedGoal)
+      )?.data;
+      if (found) return found;
+    }
+    return list.find((goal) => goal.data.status === 0)?.data;
+  }, [goals.data, pinnedGoal]);
 
-        for await (const notification of notifications) {
-          const donations = parseDonationEvents(
-            notification.value.logs
-          ).filter((event) => event.creator === creatorAddress);
-
-          if (donations.length > 0) {
-            setQueue((pending) => [...pending, ...donations]);
-            goals.reload();
-          }
-        }
-      } catch {
-        if (!controller.signal.aborted) setConnected(false);
-      }
-    })();
-
-    return () => controller.abort();
+  const accept = useCallback(
+    (donation: LiveDonation) => {
+      const minimum = BigInt(settings.minAmount);
+      if (minimum > 0n && BigInt(donation.amount) < minimum) return;
+      setQueue((pending) => [...pending, donation]);
+      goals.reload();
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client, creatorAddress]);
+    [settings.minAmount]
+  );
+
+  const { connected } = useLiveDonations({
+    creatorAddress,
+    report: true,
+    onDonation: accept,
+  });
 
   // --- one alert at a time -------------------------------------------------
   useEffect(() => {
@@ -107,26 +128,45 @@ export default function OverlayPage() {
     setQueue((pending) => pending.slice(1));
   }, [current, queue]);
 
+  const audio = useRef<HTMLAudioElement | null>(null);
+
   useEffect(() => {
     if (!current) return;
-    const startExit = setTimeout(() => setLeaving(true), HOLD_MS);
+
+    if (settings.soundEnabled && settings.soundUrl) {
+      audio.current = new Audio(settings.soundUrl);
+      // Autoplay is blocked in a normal tab and allowed in OBS's browser
+      // source. A rejected promise here is the former, and it is not an error
+      // worth surfacing on someone's stream.
+      void audio.current.play().catch(() => {});
+    }
+
+    if (settings.ttsEnabled && current.message && "speechSynthesis" in window) {
+      const utterance = new SpeechSynthesisUtterance(current.message);
+      utterance.rate = settings.ttsRate;
+      if (settings.ttsVoice) {
+        const voice = window.speechSynthesis
+          .getVoices()
+          .find((candidate) => candidate.name === settings.ttsVoice);
+        if (voice) utterance.voice = voice;
+      }
+      window.speechSynthesis.speak(utterance);
+    }
+
+    const startExit = setTimeout(() => setLeaving(true), settings.alertDurationMs);
     const finish = setTimeout(() => {
       setCurrent(null);
       setLeaving(false);
-    }, HOLD_MS + EXIT_MS);
+    }, settings.alertDurationMs + EXIT_MS);
+
     return () => {
       clearTimeout(startExit);
       clearTimeout(finish);
     };
-  }, [current]);
+  }, [current, settings]);
 
-  const trackedGoal: Goal | undefined = (() => {
-    const list = goals.data ?? [];
-    if (goalIndex !== null) {
-      return list.find((goal) => goal.data.index === BigInt(goalIndex))?.data;
-    }
-    return list.find((goal) => goal.data.status === 0)?.data;
-  })();
+  const token = tokenFor(current?.mint ?? trackedGoal?.mint ?? "");
+  const barToken = tokenFor(trackedGoal?.mint ?? "");
 
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-transparent">
@@ -135,18 +175,28 @@ export default function OverlayPage() {
         {current && (
           <div
             className={leaving ? "alert-exit" : "alert-enter"}
-            key={`${current.donor}-${current.timestamp}`}
+            key={`${current.signature}-${current.donor}`}
           >
-            <div className="border border-black/40 bg-ink-850/95 p-6 shadow-[8px_8px_0_#c63d2f] backdrop-blur-sm">
-              <p className="eyebrow mb-4 border-b border-black/20 pb-3 text-grape-400">
-                {t("newDonation")}
+            <div
+              className="border border-black/40 bg-ink-850/95 p-6 backdrop-blur-sm"
+              style={{ boxShadow: `8px 8px 0 ${settings.accent}` }}
+            >
+              <p
+                className="eyebrow mb-4 border-b border-black/20 pb-3"
+                style={{ color: settings.accent }}
+              >
+                {settings.alertHeading || t("newDonation")}
               </p>
               <div className="flex items-baseline justify-between gap-4">
                 <span className="font-mono text-lg text-mist-100">
                   {shortAddress(current.donor, 4)}
                 </span>
-                <span className="font-mono text-3xl font-bold tracking-[-0.06em] text-grape-400">
-                  {formatSol(current.amount)} SOL
+                <span
+                  className="font-mono text-3xl font-bold tracking-[-0.06em]"
+                  style={{ color: settings.accent }}
+                >
+                  {formatTokenAmount(BigInt(current.amount), token.decimals)}{" "}
+                  {token.symbol}
                 </span>
               </div>
 
@@ -176,10 +226,10 @@ export default function OverlayPage() {
               </span>
               <span className="shrink-0 text-sm text-mist-300">
                 <span className="font-semibold text-mint-300">
-                  {formatSol(trackedGoal.raised)}
+                  {formatTokenAmount(trackedGoal.raised, barToken.decimals)}
                 </span>
                 {" / "}
-                {formatSol(trackedGoal.target)}
+                {formatTokenAmount(trackedGoal.target, barToken.decimals)}
               </span>
             </div>
             <ProgressBar
@@ -190,7 +240,7 @@ export default function OverlayPage() {
         </div>
       )}
 
-      {/* Setup aid — only visible before the socket is live, never during a stream. */}
+      {/* Setup aid — opt-in, so the button can never appear on a live stream. */}
       {testMode && (
         <button
           type="button"
@@ -198,19 +248,22 @@ export default function OverlayPage() {
             setQueue((pending) => [
               ...pending,
               {
-                goal: (trackedGoal?.creator ?? "") as DonationEvent["goal"],
-                creator: (creatorAddress ?? "") as DonationEvent["creator"],
-                donor:
-                  "7v54NWdBtkjuAFJrLGsS2SXnuk8nKam81mZJeeYxVFi9" as DonationEvent["donor"],
-                mint: "11111111111111111111111111111111" as DonationEvent["mint"],
-                amount: 1_500_000_000n,
-                net: 1_462_500_000n,
-                fee: 37_500_000n,
+                signature: `test-${pending.length}`,
+                eventIndex: 0,
+                goalAddress: trackedGoal ? "" : "",
+                creatorAddress: creatorAddress ?? "",
+                handle,
+                goalTitle: trackedGoal?.title ?? null,
+                goalIndex: null,
+                donor: "7v54NWdBtkjuAFJrLGsS2SXnuk8nKam81mZJeeYxVFi9",
+                mint: trackedGoal?.mint ?? "11111111111111111111111111111111",
+                amount: "1500000000",
+                net: "1462500000",
+                fee: "37500000",
                 message: "Test alert — თუ ამას ხედავ, ყველაფერი მუშაობს!",
-                raised: trackedGoal?.raised ?? 0n,
-                target: trackedGoal?.target ?? 1n,
                 isFirstTime: true,
-                timestamp: BigInt(Math.floor(Date.now() / 1000)),
+                timestamp: Math.floor(Date.now() / 1000),
+                live: true,
               },
             ])
           }

@@ -31,10 +31,16 @@ export function Nav() {
 
         <nav className="flex items-center gap-1 sm:gap-3">
           <Link
-            href="/#goals"
+            href="/explore"
             className="hidden px-3 py-2 text-xs font-bold uppercase tracking-[0.08em] text-mist-500 transition-colors hover:text-grape-400 sm:block"
           >
-            {t("browse")}
+            {t("explore")}
+          </Link>
+          <Link
+            href="/activity"
+            className="hidden px-3 py-2 text-xs font-bold uppercase tracking-[0.08em] text-mist-500 transition-colors hover:text-grape-400 sm:block"
+          >
+            {t("activity")}
           </Link>
           <Link
             href="/dashboard"

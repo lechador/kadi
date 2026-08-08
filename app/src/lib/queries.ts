@@ -45,7 +45,16 @@ export type KadiRpc = {
   getSignaturesForAddress: (
     address: Address,
     config: Record<string, unknown>
-  ) => { send: () => Promise<readonly { signature: string }[]> };
+  ) => {
+    send: () => Promise<
+      readonly {
+        signature: string;
+        slot?: bigint | number;
+        blockTime?: bigint | number | null;
+        err?: unknown;
+      }[]
+    >;
+  };
   getTokenAccountBalance: (address: Address) => {
     send: () => Promise<{ value: { amount: string } }>;
   };
@@ -53,7 +62,11 @@ export type KadiRpc = {
     signature: string,
     config: Record<string, unknown>
   ) => {
-    send: () => Promise<{ meta?: { logMessages?: readonly string[] } } | null>;
+    send: () => Promise<{
+      slot?: bigint | number;
+      blockTime?: bigint | number | null;
+      meta?: { logMessages?: readonly string[] | null; err?: unknown } | null;
+    } | null>;
   };
   getAccountInfo: unknown;
   getMultipleAccounts: unknown;
@@ -183,6 +196,19 @@ export async function fetchAllGoals(rpc: KadiRpc): Promise<WithAddress<Goal>[]> 
   );
 
   return goals.sort((a, b) => Number(b.data.createdAt - a.data.createdAt));
+}
+
+/// Every creator account. Used by the indexer's full refresh, which is the one
+/// caller that genuinely wants the whole set — pages resolve a single creator
+/// by deriving its PDA from the handle instead.
+export async function fetchAllCreators(
+  rpc: KadiRpc
+): Promise<WithAddress<Creator>[]> {
+  return getDecodedProgramAccounts(
+    rpc,
+    [discriminatorFilter(CREATOR_DISCRIMINATOR)],
+    (bytes) => getCreatorDecoder().decode(bytes)
+  );
 }
 
 /// Reverse lookup for the dashboard: a creator PDA is seeded by handle, so

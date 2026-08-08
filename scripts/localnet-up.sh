@@ -24,7 +24,15 @@ if curl -s -m 2 -X POST "$RPC" -H 'Content-Type: application/json' \
 else
   echo "==> starting validator"
   mkdir -p test-ledger
-  nohup solana-test-validator --reset --quiet > test-ledger/validator.log 2>&1 &
+  # The default retention is 10,000 shreds — about forty minutes of an idle
+  # validator's slots. Once those slots are purged `getSignaturesForAddress`
+  # returns nothing, and the goal page's donation ledger silently empties even
+  # though the accounts are still there. Raising it keeps a working session's
+  # history queryable. (Indexed donations survive the purge either way; this is
+  # about the first sync still having something to read.)
+  nohup solana-test-validator --reset --quiet \
+    --limit-ledger-size 10000000 \
+    > test-ledger/validator.log 2>&1 &
   echo "    waiting for it to come up…"
   for _ in $(seq 1 60); do
     if curl -s -m 2 -X POST "$RPC" -H 'Content-Type: application/json' \
