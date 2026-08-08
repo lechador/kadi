@@ -1,0 +1,37 @@
+{
+  "name": "kadi-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "codegen": "node scripts/codegen.mjs",
+    "dev": "npm run codegen && next dev",
+    "build": "npm run codegen && next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@solana-program/system": "^0.13.0",
+    "@solana-program/token": "^0.15.0",
+    "@solana/kit": "^7.0.0",
+    "@solana/kit-plugin-rpc": "^0.16.0",
+    "@solana/kit-plugin-wallet": "^0.14.0",
+    "@solana/program-client-core": "^7.0.0",
+    "@solana/react": "^7.0.0",
+    "next": "^16.3.0",
+    "qrcode": "^1.5.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@codama/nodes-from-anchor": "^1.5.3",
+    "@codama/renderers-js": "^2.3.1",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^24.0.0",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "codama": "^1.10.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.2"
+  }
+}

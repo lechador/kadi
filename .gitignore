@@ -1,0 +1,30 @@
+node_modules
+.DS_Store
+
+# Anchor / Solana build output.
+#
+# target/ is ignored EXCEPT the IDL and generated types: those are the contract
+# between the program and every client, and committing them means the frontend
+# can be built and typechecked from a fresh clone without a Rust toolchain.
+/target/*
+!/target/idl/
+!/target/types/
+
+.anchor
+test-ledger
+
+# Next.js
+app/.next
+app/out
+app/.codama-tmp
+app/tsconfig.tsbuildinfo
+
+# Local environment. app/.env.local.example is committed as the template.
+app/.env*.local
+
+# Keys — never commit these. The program upgrade keypair lives in
+# target/deploy/ and is excluded by the rule above; back it up separately,
+# because losing it means the deployed program can never be upgraded.
+*.pem
+*-keypair.json
+keys/
