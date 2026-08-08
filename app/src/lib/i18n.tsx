@@ -284,6 +284,8 @@ const ka: Record<string, string> = {
   topSupportersAllTime: "საუკეთესო მხარდამჭერები",
   noAnalytics: "ანალიტიკა ინდექსს საჭიროებს. დააყენე DATABASE_URL და გაუშვი /api/sync.",
   savedWouldHaveBeen: "ჩვეულებრივ პლატფორმაზე დაგეკარგებოდა {amount} SOL",
+  protocolNotReady: "პროტოკოლი ჯერ არ არის ინიციალიზებული {cluster}-ზე, ამიტომ დონაციის მიღება ვერ ხერხდება — საკომისიოსა და სახაზინო მისამართის ჩვენება ჯერ შეუძლებელია.",
+  ledgerStillReadable: "მიზნისა და დონაციების ისტორია იკითხება",
   dailyChartLabel: "დღიური დონაციები SOL-ში, ბოლო 30 დღე",
   showTable: "ცხრილად ჩვენება",
   hideTable: "ცხრილის დამალვა",
@@ -335,6 +337,8 @@ const en: Record<string, string> = {
   analytics: "Analytics", last30Days: "Last 30 days", lifetimeRaised: "Raised all-time", lifetimeFees: "Fees paid", uniqueSupporters: "Unique supporters", topSupportersAllTime: "Top supporters",
   noAnalytics: "Analytics need an index. Set DATABASE_URL and run /api/sync.",
   savedWouldHaveBeen: "A typical platform would have taken {amount} SOL",
+  protocolNotReady: "The protocol is not initialised on {cluster} yet, so donations cannot be accepted — there is no fee or treasury address to quote.",
+  ledgerStillReadable: "The goal and its donation history still read fine",
   dailyChartLabel: "Daily donations in SOL over the last 30 days",
   showTable: "Show as table", hideTable: "Hide table", day: "Day",
 };

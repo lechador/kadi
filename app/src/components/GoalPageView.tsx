@@ -10,7 +10,7 @@ import { ProgressBar } from "@/components/ProgressBar";
 import { SiteFooter } from "@/components/SiteFooter";
 import { StatusPill } from "@/components/GoalCard";
 import { SupporterList } from "@/components/SupporterList";
-import { explorerTx } from "@/lib/config";
+import { CHAIN, explorerTx } from "@/lib/config";
 import {
   formatDeadline,
   formatTokenAmount,
@@ -55,6 +55,10 @@ export function GoalPageView({
   const [supporters, setSupporters] = useState(initialSupporters);
   const [config, setConfig] = useState(initialConfig);
   const [verified, setVerified] = useState(false);
+  // Distinguishes "the server had no config, the browser has not looked yet"
+  // from "both looked and there is none" — one is a spinner, the other is an
+  // explanation.
+  const [configChecking, setConfigChecking] = useState(initialConfig === null);
 
   const token = tokenFor(goal.mint);
 
@@ -92,9 +96,12 @@ export function GoalPageView({
   useEffect(() => {
     void revalidate();
     if (config) return;
-    void fetchConfig(client.rpc).then((fresh) => {
-      if (fresh) setConfig({ treasury: fresh.treasury, feeBps: fresh.feeBps });
-    });
+    void fetchConfig(client.rpc)
+      .then((fresh) => {
+        if (fresh) setConfig({ treasury: fresh.treasury, feeBps: fresh.feeBps });
+      })
+      .catch(() => {})
+      .finally(() => setConfigChecking(false));
   }, [client, config, revalidate]);
 
   /// Pulls the ledger and leaderboard back from the API, which reads the index.
@@ -269,7 +276,7 @@ export function GoalPageView({
           </div>
 
           <aside className="space-y-8">
-            {config && (
+            {config ? (
               <DonatePanel
                 goalAddress={goal.address as Address}
                 mint={goal.mint as Address}
@@ -283,6 +290,13 @@ export function GoalPageView({
                   setTimeout(() => void refreshFeed(), 1_200);
                 }}
               />
+            ) : (
+              /* The donate widget quotes a fee and a treasury address, both of
+                 which come from the `Config` account. Without it there is no
+                 honest number to show — but rendering nothing, as this did,
+                 leaves a donor staring at a goal with no way to give and no
+                 reason why. */
+              <ConfigMissing checking={configChecking} />
             )}
 
             <section className="border-t border-rule-solid pt-5">
@@ -308,6 +322,34 @@ export function GoalPageView({
 
       <SiteFooter />
     </>
+  );
+}
+
+/// Shown in the donate widget's place when the protocol has no `Config`
+/// account on the configured cluster.
+///
+/// This is the state a half-finished deployment lands in: the pages render,
+/// the ledger reads fine, and the one thing the site exists for is missing. It
+/// says so, and names the cluster, because "nothing happened" is the least
+/// useful thing a donation page can tell someone.
+function ConfigMissing({ checking }: { checking: boolean }) {
+  const { t } = useLanguage();
+  const cluster = CHAIN.split(":")[1] ?? "unknown";
+
+  if (checking) {
+    return <div className="card h-56 animate-pulse border-rule opacity-50" />;
+  }
+
+  return (
+    <div className="card border-rule-strong p-5">
+      <h3 className="font-semibold text-mist-100">{t("supportGoal")}</h3>
+      <p className="mt-3 text-xs leading-relaxed text-mist-500">
+        {t("protocolNotReady", { cluster })}
+      </p>
+      <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.08em] text-mist-600">
+        {t("ledgerStillReadable")}
+      </p>
+    </div>
   );
 }
 
