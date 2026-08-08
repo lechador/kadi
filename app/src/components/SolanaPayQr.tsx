@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 
 import { APP_URL } from "@/lib/config";
+import { useLanguage } from "@/lib/i18n";
 
 /// Builds a Solana Pay *transaction request* URL. The wallet fetches the inner
 /// HTTPS endpoint, which returns a fully-formed donation transaction — so a
@@ -38,6 +39,7 @@ export function SolanaPayQr({
   symbol?: string;
   size?: number;
 }) {
+  const { t } = useLanguage();
   const [dataUrl, setDataUrl] = useState<string>();
   const [error, setError] = useState<string>();
 
@@ -54,12 +56,12 @@ export function SolanaPayQr({
       })
       .catch((err: unknown) => {
         if (!cancelled)
-          setError(err instanceof Error ? err.message : "QR failed");
+          setError(err instanceof Error ? err.message : t("qrFailed"));
       });
     return () => {
       cancelled = true;
     };
-  }, [handle, index, amount, message, size]);
+  }, [handle, index, amount, message, size, t]);
 
   return (
     <div className="flex flex-col items-center gap-3">
@@ -71,26 +73,22 @@ export function SolanaPayQr({
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={dataUrl}
-            alt="Solana Pay donation QR code"
+            alt={t("qrAlt")}
             className="h-full w-full"
           />
         ) : (
           <span className="text-xs text-mist-600">
-            {error ?? "Generating…"}
+            {error ?? t("generating")}
           </span>
         )}
       </div>
       <p className="max-w-[15rem] text-center text-xs leading-relaxed text-mist-600">
         {amount ? (
           <>
-            Scan to donate{" "}
-            <span className="font-mono font-bold text-mist-300">
-              {amount} {symbol}
-            </span>{" "}
-            from any Solana Pay wallet.
+            {t("qrAmount", { amount, symbol })}
           </>
         ) : (
-          <>Scan with any Solana Pay wallet to donate from your phone.</>
+          <>{t("qrAny")}</>
         )}
       </p>
     </div>

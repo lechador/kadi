@@ -1,0 +1,251 @@
+"use client";
+
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+
+export type Language = "ka" | "en";
+type Variables = Record<string, string | number | bigint>;
+
+const ka: Record<string, string> = {
+  browse: "დათვალიერება",
+  forCreators: "კრეატორებისთვის",
+  connectWallet: "საფულის დაკავშირება",
+  disconnect: "გათიშვა",
+  noWallet: "Solana-ს საფულე ვერ მოიძებნა. დააყენეთ Phantom, Solflare ან Backpack.",
+  creatorFunding: "კრეატორების დაფინანსება / საქართველო → ყველგან",
+  liveOnSolana: "პირდაპირ Solana-ზე",
+  heroTitle: "დაიტოვე ის, რასაც აუდიტორია გჩუქნის.",
+  heroBody: "კრეატორის პირდაპირი მხარდაჭერა ზედმეტი ლოდინის გარეშე. დონაცია წამებში სრულდება, ინახება კრეატორის მიერ მართულ საცავში და ბლოკჩეინზე საჯარო ქვითარს ტოვებს.",
+  openYourPage: "გახსენი შენი გვერდი",
+  browseGoals: "მიზნების ნახვა",
+  feeComparison: "საკომისიოს შედარება",
+  typicalPlatform: "ჩვეულებრივი პლატფორმა",
+  kept925: "რჩება 92.5%",
+  withKadi: "Kadi-სთან",
+  kept975: "რჩება 97.5%",
+  noPayoutQueue: "გატანის რიგის გარეშე",
+  noCustody: "შუამავლის გარეშე",
+  raised: "შეგროვებული",
+  donations: "დონაციები",
+  creators: "კრეატორები",
+  openGoals: "ღია მიზნები",
+  liveLedger: "მონაცემები პირდაპირ ბლოკჩეინიდან. ანალიტიკის ბაზისა და დახურული მთვლელის გარეშე.",
+  openNow: "ახლა ღია / 01",
+  fundReal: "დააფინანსე რეალური მიზანი.",
+  fundRealBody: "აირჩიე მიზანი, დატოვე შეტყობინება და თვალი ადევნე გადარიცხვას. ყველა თანხა პირდაპირ ბლოკჩეინიდან იკითხება.",
+  firstPageBlank: "პირველი გვერდი ჯერ ცარიელია.",
+  createFirstGoal: "შექმენი პირველი მიზანი →",
+  terms: "პირობები / 02",
+  noSmallPrint: "დამალული წვრილი შრიფტის გარეშე.",
+  creatorControlled: "კრეატორის კონტროლქვეშ",
+  creatorControlledBody: "თანხა პროგრამის საცავშია და მისი გატანა მხოლოდ კრეატორს შეუძლია.",
+  streamReady: "მზადაა სტრიმისთვის",
+  streamReadyBody: "OBS-ის ერთი Browser Source ბლოკჩეინის მოვლენებს დონაციის პირდაპირ შეტყობინებებად აქცევს.",
+  globalDefault: "თავიდანვე გლობალური",
+  globalDefaultBody: "საფულე ან QR სკანირება საზღვრებს მიღმა, საერთაშორისო ბარათის გარეშე მუშაობს.",
+  audienceThere: "შენი აუდიტორია უკვე იქ არის.",
+  claimHandleArrow: "დაიკავე შენი სახელი →",
+  footer: "ღია კოდი / არაკასტოდიული / შექმნილია Solana-ზე",
+  goal: "მიზანი",
+  active: "აქტიური",
+  completed: "დასრულებული",
+  archived: "დაარქივებული",
+  supporter: "მხარდამჭერი",
+  supporters: "მხარდამჭერები",
+  goalProgress: "მიზნის პროგრესი",
+  noSupporters: "მხარდამჭერები ჯერ არ არიან — იყავი პირველი.",
+  last: "ბოლო:",
+  justNow: "ახლახან",
+  minutesAgo: "{count} წთ-ის წინ",
+  hoursAgo: "{count} სთ-ის წინ",
+  daysAgo: "{count} დღის წინ",
+  ended: "დასრულდა",
+  daysLeft: "დარჩა {count} დღე",
+  hoursLeft: "დარჩა {count} საათი",
+  minutesLeft: "დარჩა {count} წუთი",
+  chainUnavailable: "ბლოკჩეინთან კავშირი ვერ ხერხდება",
+  chainUnavailableBody: "Kadi ყველაფერს პირდაპირ Solana-დან კითხულობს, ამიტომ RPC კავშირის გარეშე მონაცემებს ვერ გაჩვენებთ.",
+  endpoint: "მისამართი",
+  localValidator: "ეს ვერსია ლოკალურ ვალიდატორს იყენებს. გაუშვით:",
+  thenRun: "შემდეგ გაუშვით",
+  details: "დეტალები",
+  tryAgain: "სცადეთ თავიდან",
+  supportGoal: "მხარი დაუჭირე ამ მიზანს",
+  useWallet: "საფულით გადახდა",
+  scanQr: "QR-ის სკანირება",
+  qrSolOnly: "Solana Pay QR ხელმისაწვდომია SOL მიზნებისთვის. ამ {symbol} მიზანს დაკავშირებული საფულით დაუჭირეთ მხარი.",
+  amount: "თანხა ({symbol})",
+  balance: "ბალანსი {amount}",
+  messageStream: "შეტყობინება (გამოჩნდება სტრიმზე)",
+  messagePlaceholder: "გამარჯობა! წარმატებები 🇬🇪",
+  creatorReceives: "კრეატორი მიიღებს",
+  protocolFee: "პროტოკოლის საკომისიო ({fee}%)",
+  confirming: "დადასტურება…",
+  connectToDonate: "დონაციისთვის დააკავშირეთ საფულე",
+  notAccepting: "დონაციები არ მიიღება",
+  notEnough: "არასაკმარისი {symbol}",
+  donate: "დონაცია",
+  donationConfirmed: "დონაცია დადასტურდა ·",
+  viewTransaction: "ტრანზაქციის ნახვა",
+  donationFailed: "დონაცია ვერ შესრულდა",
+  generating: "გენერირება…",
+  qrFailed: "QR ვერ შეიქმნა",
+  qrAmount: "დაასკანერეთ და გაიღეთ {amount} {symbol} ნებისმიერი Solana Pay საფულიდან.",
+  qrAny: "დაასკანერეთ ნებისმიერი Solana Pay საფულით და გაიღეთ დონაცია ტელეფონიდან.",
+  qrAlt: "Solana Pay დონაციის QR კოდი",
+  creatorStudio: "კრეატორის სივრცე",
+  walletIsAccount: "თქვენი საფულე თქვენი ანგარიშიცაა. Kadi არასოდეს ინახავს თქვენს გასაღებებს ან დონაციებს.",
+  creatorRegistration: "კრეატორის რეგისტრაცია",
+  claimYourHandle: "დაიკავეთ თქვენი სახელი",
+  handleBody: "ეს სახელი თქვენი დონაციის გვერდის მისამართია და ბლოკჩეინზე რეგისტრირდება — ის მხოლოდ თქვენ გეკუთვნით.",
+  handle: "სახელი",
+  handleRules: "3–32 სიმბოლო: მხოლოდ პატარა ლათინური ასოები, ციფრები და ქვედა ტირე.",
+  displayName: "საჩვენებელი სახელი",
+  bio: "აღწერა",
+  registering: "რეგისტრაცია…",
+  claimHandle: "სახელის დაკავება",
+  registrationFailed: "რეგისტრაცია ვერ მოხერხდა",
+  close: "დახურვა",
+  editProfile: "პროფილის რედაქტირება",
+  viewPublicPage: "საჯარო გვერდის ნახვა",
+  obsSource: "OBS Browser Source",
+  obsBody: "დაამატეთ Browser Source-ად 1920×1080 ზომითა და გამჭვირვალე ფონით. შეტყობინებები პირდაპირ ბლოკჩეინიდან ჩნდება.",
+  copied: "დაკოპირდა",
+  copy: "კოპირება",
+  settingUp: "აწყობთ?",
+  openTestAlert: "გახსენით სატესტო შეტყობინების ღილაკით",
+  testBeforeLive: "და შეამოწმეთ პირდაპირ ეთერში გასვლამდე.",
+  portfolio: "პორტფოლიო",
+  yourGoals: "თქვენი მიზნები",
+  noGoals: "მიზნები ჯერ არ გაქვთ — შექმენით პირველი ზემოთ.",
+  avatarUrl: "ავატარის URL",
+  optional: "(არასავალდებულო)",
+  saving: "შენახვა…",
+  saveChanges: "ცვლილებების შენახვა",
+  couldNotSave: "შენახვა ვერ მოხერხდა",
+  newGoal: "ახალი მიზანი",
+  newEntry: "ახალი ჩანაწერი",
+  title: "სათაური",
+  goalTitlePlaceholder: "ახალი მიკროფონი",
+  description: "აღწერა",
+  goalDescriptionPlaceholder: "სტრიმის ხმის გაუმჯობესება",
+  denomination: "ვალუტა",
+  solMoves: "მიზნის ღირებულება SOL-ის ფასთან ერთად იცვლება.",
+  tokenFixed: "{symbol}-ის მიზანი დოლარში ფიქსირებულ ღირებულებას ინარჩუნებს.",
+  target: "მიზანი ({symbol})",
+  deadline: "ბოლო ვადა",
+  futureDeadline: "ბოლო ვადა მომავალში უნდა იყოს.",
+  deadlineBody: "ბოლო ვადის შემდეგ მიზანი დონაციებს აღარ მიიღებს. უვადო მიზნისთვის ცარიელი დატოვეთ.",
+  creating: "შექმნა…",
+  createGoal: "მიზნის შექმნა",
+  cancel: "გაუქმება",
+  couldNotCreate: "მიზანი ვერ შეიქმნა",
+  claimed: "გატანილი",
+  available: "ხელმისაწვდომია:",
+  archive: "დაარქივება",
+  markDone: "დასრულებულად მონიშვნა",
+  reopen: "ხელახლა გახსნა",
+  claiming: "გატანა…",
+  claim: "გატანა",
+  claimFailed: "გატანა ვერ მოხერხდა",
+  creator404: "404 / კრეატორი",
+  noCreator: "გვერდი @{handle}-სთვის არ არსებობს.",
+  handleAvailable: "ეს სახელი ჯერ თავისუფალია.",
+  claimIt: "დაიკავეთ →",
+  creatorPage: "კრეატორის გვერდი / @{handle}",
+  allTimeSupport: "სრული მხარდაჭერა",
+  tokenRaised: "შეგროვებულია {symbol}",
+  payoutAddress: "გასატანი მისამართი",
+  activeCount: "აქტიური / {count}",
+  currentGoals: "მიმდინარე მიზნები",
+  noActiveGoals: "ამჟამად აქტიური მიზნები არ არის.",
+  archiveCount: "არქივი / {count}",
+  goal404: "404 / მიზანი",
+  goalMissing: "ეს მიზანი ვერ მოიძებნა.",
+  backGoals: "← ყველა მიზანზე დაბრუნება",
+  progress: "პროგრესი",
+  of: "სულ {amount}",
+  started: "დაწყებული",
+  donationLedger: "დონაციების ჟურნალი",
+  recentSupport: "ბოლო მხარდაჭერა",
+  ledgerBody: "ქვემოთ მოცემული ყველა შეტყობინება საჯარო ტრანზაქციების ჟურნალიდან იკითხება.",
+  noDonations: "დონაციები ჯერ არ არის.",
+  firstTime: "პირველი დონაცია",
+  viewReceipt: "ქვითრის ნახვა",
+  leaderboard: "ლიდერბორდი",
+  topSupporters: "საუკეთესო მხარდამჭერები",
+  somethingBroke: "შეცდომა მოხდა",
+  didNotWork: "ოპერაცია ვერ შესრულდა.",
+  errorBody: "მოულოდნელმა შეცდომამ გვერდის მუშაობა შეაჩერა. ბლოკჩეინზე არაფერი შეცვლილა — Kadi თანხებს არ ინახავს, წარუმატებელი ტრანზაქცია კი უბრალოდ არ იწერება.",
+  goHome: "მთავარ გვერდზე",
+  nothingHere: "აქ არაფერია.",
+  notFoundBody: "ეს გვერდი არ არსებობს. კრეატორის გვერდებია /c/<სახელი>, მიზნები კი /goal/<სახელი>/<ნომერი> მისამართებზე.",
+  newDonation: "ახალი დონაცია / პირდაპირ",
+  firstTimeSupporter: "ახალი მხარდამჭერი",
+  fireTest: "სატესტო შეტყობინება",
+  connecting: "დაკავშირება…",
+  noCreatorShort: "კრეატორი @{handle} ვერ მოიძებნა",
+  waitingRpc: "RPC გამოწერის მოლოდინი…",
+};
+
+const en: Record<string, string> = {
+  browse: "Browse", forCreators: "For creators", connectWallet: "Connect wallet", disconnect: "Disconnect",
+  noWallet: "No Solana wallet detected. Install Phantom, Solflare or Backpack.", creatorFunding: "Creator funding / Georgia → anywhere",
+  liveOnSolana: "Live on Solana", heroTitle: "Keep what your audience gives.", heroBody: "Direct creator support without the waiting room. Donations settle in seconds, live in a creator-controlled vault, and leave a public receipt on-chain.",
+  openYourPage: "Open your page", browseGoals: "Browse goals", feeComparison: "Fee comparison", typicalPlatform: "Typical platform", kept925: "92.5% kept", withKadi: "With Kadi", kept975: "97.5% kept", noPayoutQueue: "No payout queue", noCustody: "No custody",
+  raised: "Raised", donations: "Donations", creators: "Creators", openGoals: "Open goals", liveLedger: "Live ledger values. No analytics database, no private counter.", openNow: "Open now / 01", fundReal: "Fund something real.", fundRealBody: "Pick a goal, leave a message, and watch the transfer land. Every amount below comes directly from the chain.", firstPageBlank: "The first page is still blank.", createFirstGoal: "Create the first goal →",
+  terms: "The terms / 02", noSmallPrint: "No small print hiding backstage.", creatorControlled: "Creator-controlled", creatorControlledBody: "Funds sit in a program vault only the creator can withdraw from.", streamReady: "Stream-ready", streamReadyBody: "One OBS browser source turns ledger events into live donation alerts.", globalDefault: "Global by default", globalDefaultBody: "A wallet or QR scan works across borders without an international card.", audienceThere: "Your audience is already there.", claimHandleArrow: "Claim your handle →", footer: "Open source / non-custodial / built on Solana",
+  goal: "Goal", active: "Active", completed: "Completed", archived: "Archived", supporter: "supporter", supporters: "supporters", goalProgress: "Goal progress", noSupporters: "No supporters yet — be the first.", last: "last", justNow: "just now", minutesAgo: "{count}m ago", hoursAgo: "{count}h ago", daysAgo: "{count}d ago", ended: "ended", daysLeft: "{count}d left", hoursLeft: "{count}h left", minutesLeft: "{count}m left",
+  chainUnavailable: "Cannot reach the chain", chainUnavailableBody: "Kadi reads everything directly from Solana, so nothing can be shown without an RPC connection.", endpoint: "endpoint", localValidator: "This build points at a local validator. Start one with:", thenRun: "then run", details: "Details", tryAgain: "Try again",
+  supportGoal: "Support this goal", useWallet: "Use wallet", scanQr: "Scan QR", qrSolOnly: "Solana Pay QR is available for SOL goals. Donate to this {symbol} goal with a connected wallet.", amount: "Amount ({symbol})", balance: "balance {amount}", messageStream: "Message (shown on stream)", messagePlaceholder: "Hello! Keep it up 🇬🇪", creatorReceives: "Creator receives", protocolFee: "Protocol fee ({fee}%)", confirming: "Confirming…", connectToDonate: "Connect a wallet to donate", notAccepting: "Not accepting donations", notEnough: "Not enough {symbol}", donate: "Donate", donationConfirmed: "Donation confirmed ·", viewTransaction: "view transaction", donationFailed: "Donation failed", generating: "Generating…", qrFailed: "QR failed", qrAmount: "Scan to donate {amount} {symbol} from any Solana Pay wallet.", qrAny: "Scan with any Solana Pay wallet to donate from your phone.", qrAlt: "Solana Pay donation QR code",
+  creatorStudio: "Creator studio", walletIsAccount: "Your wallet is your account. Kadi never holds your keys or your donations.", creatorRegistration: "Creator registration", claimYourHandle: "Claim your handle", handleBody: "Your handle is your donation page and it is registered on-chain, so it is yours alone.", handle: "Handle", handleRules: "3–32 characters, lowercase letters, digits and underscore only.", displayName: "Display name", bio: "Bio", registering: "Registering…", claimHandle: "Claim handle", registrationFailed: "Registration failed", close: "Close", editProfile: "Edit profile", viewPublicPage: "View public page", obsSource: "OBS browser source", obsBody: "Add this as a Browser source at 1920×1080 with a transparent background. Alerts fire straight from the chain.", copied: "Copied", copy: "Copy", settingUp: "Setting it up?", openTestAlert: "Open with a test-alert button", testBeforeLive: "to check it works before going live.", portfolio: "Portfolio", yourGoals: "Your goals", noGoals: "No goals yet — create your first one above.", avatarUrl: "Avatar URL", optional: "(optional)", saving: "Saving…", saveChanges: "Save changes", couldNotSave: "Could not save",
+  newGoal: "New goal", newEntry: "New entry", title: "Title", goalTitlePlaceholder: "New microphone", description: "Description", goalDescriptionPlaceholder: "Upgrading the stream audio", denomination: "Denomination", solMoves: "The target moves with the SOL price.", tokenFixed: "A {symbol} goal keeps the target fixed in dollar terms.", target: "Target ({symbol})", deadline: "Deadline", futureDeadline: "The deadline has to be in the future.", deadlineBody: "After the deadline the goal stops accepting donations. Leave empty for an open-ended goal.", creating: "Creating…", createGoal: "Create goal", cancel: "Cancel", couldNotCreate: "Could not create the goal",
+  claimed: "claimed", available: "Available:", archive: "Archive", markDone: "Mark done", reopen: "Reopen", claiming: "Claiming…", claim: "Claim", claimFailed: "Claim failed", creator404: "404 / creator", noCreator: "No page for @{handle}.", handleAvailable: "This handle is still available.", claimIt: "Claim it →", creatorPage: "Creator page / @{handle}", allTimeSupport: "All-time support", tokenRaised: "{symbol} raised", payoutAddress: "Payout address", activeCount: "Active / {count}", currentGoals: "Current goals", noActiveGoals: "No active goals right now.", archiveCount: "Archive / {count}", goal404: "404 / goal", goalMissing: "This goal is not here.", backGoals: "← Back to all goals", progress: "Progress", of: "of {amount}", started: "Started", donationLedger: "Donation ledger", recentSupport: "Recent support", ledgerBody: "Every message below is read from the public transaction log.", noDonations: "No donations yet.", firstTime: "first time", viewReceipt: "view receipt", leaderboard: "Leaderboard", topSupporters: "Top supporters",
+  somethingBroke: "Something broke", didNotWork: "That did not work.", errorBody: "An unexpected error interrupted the page. Nothing on-chain was affected — Kadi never holds funds, and a failed transaction is simply not recorded.", goHome: "Go home", nothingHere: "Nothing here.", notFoundBody: "That page does not exist. Creator pages live at /c/<handle> and goals at /goal/<handle>/<number>.", newDonation: "New donation / live", firstTimeSupporter: "first-time supporter", fireTest: "Fire test alert", connecting: "connecting…", noCreatorShort: "no creator @{handle}", waitingRpc: "waiting for the RPC subscription…",
+};
+
+const dictionaries = { ka, en };
+
+function interpolate(value: string, variables?: Variables) {
+  if (!variables) return value;
+  return value.replace(/\{(\w+)\}/g, (_, key: string) => String(variables[key] ?? `{${key}}`));
+}
+
+type LanguageContextValue = {
+  language: Language;
+  setLanguage: (language: Language) => void;
+  t: (key: string, variables?: Variables) => string;
+};
+
+const LanguageContext = createContext<LanguageContextValue | null>(null);
+
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const [language, setLanguageState] = useState<Language>("ka");
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem("kadi-language");
+    if (saved === "ka" || saved === "en") setLanguageState(saved);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
+
+  const value = useMemo<LanguageContextValue>(() => ({
+    language,
+    setLanguage(next) {
+      setLanguageState(next);
+      window.localStorage.setItem("kadi-language", next);
+    },
+    t(key, variables) {
+      return interpolate(dictionaries[language][key] ?? en[key] ?? key, variables);
+    },
+  }), [language]);
+
+  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
+}
+
+export function useLanguage() {
+  const value = useContext(LanguageContext);
+  if (!value) throw new Error("useLanguage must be used inside LanguageProvider");
+  return value;
+}

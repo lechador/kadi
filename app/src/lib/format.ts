@@ -62,27 +62,28 @@ export function percent(raised: bigint, target: bigint): number {
   return Math.min(scaled, 100);
 }
 
-export function timeAgo(unixSeconds: number | bigint): string {
+export function timeAgo(unixSeconds: number | bigint, language: "ka" | "en" = "en"): string {
   const seconds = Math.floor(Date.now() / 1000) - Number(unixSeconds);
-  if (seconds < 60) return "just now";
+  if (seconds < 60) return language === "ka" ? "ახლახან" : "just now";
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 60) return language === "ka" ? `${minutes} წთ-ის წინ` : `${minutes}m ago`;
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return language === "ka" ? `${hours} სთ-ის წინ` : `${hours}h ago`;
   const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return new Date(Number(unixSeconds) * 1000).toLocaleDateString();
+  if (days < 30) return language === "ka" ? `${days} დღის წინ` : `${days}d ago`;
+  return new Date(Number(unixSeconds) * 1000).toLocaleDateString(language === "ka" ? "ka-GE" : "en-US");
 }
 
-export function formatDeadline(deadline: bigint | null): string | null {
+export function formatDeadline(deadline: bigint | null, language: "ka" | "en" = "en"): string | null {
   if (deadline === null) return null;
   const remaining = Number(deadline) - Math.floor(Date.now() / 1000);
-  if (remaining <= 0) return "ended";
+  if (remaining <= 0) return language === "ka" ? "დასრულდა" : "ended";
   const days = Math.floor(remaining / 86_400);
-  if (days >= 1) return `${days}d left`;
+  if (days >= 1) return language === "ka" ? `დარჩა ${days} დღე` : `${days}d left`;
   const hours = Math.floor(remaining / 3_600);
-  if (hours >= 1) return `${hours}h left`;
-  return `${Math.max(1, Math.floor(remaining / 60))}m left`;
+  if (hours >= 1) return language === "ka" ? `დარჩა ${hours} საათი` : `${hours}h left`;
+  const minutes = Math.max(1, Math.floor(remaining / 60));
+  return language === "ka" ? `დარჩა ${minutes} წუთი` : `${minutes}m left`;
 }
 
 const HANDLE_PATTERN = /^[a-z0-9_]{3,32}$/;

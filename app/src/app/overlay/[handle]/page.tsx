@@ -9,6 +9,7 @@ import { parseDonationEvents, type DonationEvent } from "@/lib/events";
 import { formatSol, shortAddress } from "@/lib/format";
 import { useAsync, useKadiClient } from "@/lib/hooks";
 import { fetchCreatorByHandle, fetchCreatorGoals } from "@/lib/queries";
+import { useLanguage } from "@/lib/i18n";
 
 const HOLD_MS = 5_200;
 const EXIT_MS = 380;
@@ -17,6 +18,7 @@ const EXIT_MS = 380;
 /// logs, so an alert fires the moment a donation is confirmed — there is no
 /// webhook, backend or polling loop between the chain and the stream.
 export default function OverlayPage() {
+  const { t } = useLanguage();
   const params = useParams<{ handle: string }>();
   const search = useSearchParams();
   const handle = params.handle;
@@ -137,7 +139,7 @@ export default function OverlayPage() {
           >
             <div className="border border-black/40 bg-ink-850/95 p-6 shadow-[8px_8px_0_#c63d2f] backdrop-blur-sm">
               <p className="eyebrow mb-4 border-b border-black/20 pb-3 text-grape-400">
-                New donation / live
+                {t("newDonation")}
               </p>
               <div className="flex items-baseline justify-between gap-4">
                 <span className="font-mono text-lg text-mist-100">
@@ -150,7 +152,7 @@ export default function OverlayPage() {
 
               {current.isFirstTime && (
                 <span className="mt-3 inline-block border border-mint-400 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-mint-500">
-                  first-time supporter
+                  {t("firstTimeSupporter")}
                 </span>
               )}
 
@@ -214,17 +216,17 @@ export default function OverlayPage() {
           }
           className="absolute bottom-3 right-3 border border-black/30 bg-ink-850 px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-mist-300 hover:border-black"
         >
-          Fire test alert
+          {t("fireTest")}
         </button>
       )}
 
       {!connected && (
         <div className="absolute bottom-3 left-3 bg-black/75 px-3 py-1.5 font-mono text-[11px] text-white/70">
           {creator.loading
-            ? "connecting…"
+            ? t("connecting")
             : !creator.data
-              ? `no creator @${handle}`
-              : "waiting for the RPC subscription…"}
+              ? t("noCreatorShort", { handle })
+              : t("waitingRpc")}
         </div>
       )}
     </div>

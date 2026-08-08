@@ -6,6 +6,7 @@ import { walletSigner } from "@solana/kit-plugin-wallet";
 import { ClientProvider } from "@solana/react";
 
 import { CHAIN, RPC_URL, WS_URL } from "@/lib/config";
+import { LanguageProvider } from "@/lib/i18n";
 
 export const client = createClient()
   .use(walletSigner({ chain: CHAIN }))
@@ -18,5 +19,9 @@ export default function Providers({
 }: {
   children: React.ReactNode;
 }) {
-  return <ClientProvider client={client}>{children}</ClientProvider>;
+  return (
+    <LanguageProvider>
+      <ClientProvider client={client}>{children}</ClientProvider>
+    </LanguageProvider>
+  );
 }

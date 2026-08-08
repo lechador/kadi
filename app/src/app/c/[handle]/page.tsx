@@ -11,8 +11,10 @@ import { formatTokenAmount, shortAddress } from "@/lib/format";
 import { SOL_TOKEN, tokenFor } from "@/lib/tokens";
 import { useAsync, useKadiClient } from "@/lib/hooks";
 import { fetchCreatorByHandle, fetchCreatorGoals } from "@/lib/queries";
+import { useLanguage } from "@/lib/i18n";
 
 export default function CreatorPage() {
+  const { t } = useLanguage();
   const params = useParams<{ handle: string }>();
   const handle = params.handle;
   const client = useKadiClient();
@@ -84,14 +86,14 @@ export default function CreatorPage() {
       <>
         <Nav />
         <main className="mx-auto max-w-7xl px-5 py-24 sm:px-8">
-          <p className="eyebrow text-grape-400">404 / creator</p>
-          <h1 className="display mt-5 text-6xl">No page for @{handle}.</h1>
-          <p className="mt-4 text-sm text-mist-500">This handle is still available.</p>
+          <p className="eyebrow text-grape-400">{t("creator404")}</p>
+          <h1 className="display mt-5 text-6xl">{t("noCreator", { handle })}</h1>
+          <p className="mt-4 text-sm text-mist-500">{t("handleAvailable")}</p>
           <Link
             href="/dashboard"
             className="btn-primary mt-8 inline-block px-5 py-3 text-xs font-bold uppercase tracking-[0.08em]"
           >
-            Claim it →
+            {t("claimIt")}
           </Link>
         </main>
       </>
@@ -108,7 +110,7 @@ export default function CreatorPage() {
         <section className="border-b border-black/20 bg-ink-850">
           <div className="mx-auto grid max-w-7xl px-5 sm:px-8 lg:grid-cols-[1.4fr_0.6fr]">
             <div className="py-14 lg:border-r lg:border-black/20 lg:pr-12 lg:py-20">
-              <p className="eyebrow text-grape-400">Creator page / @{profile.handle}</p>
+              <p className="eyebrow text-grape-400">{t("creatorPage", { handle: profile.handle })}</p>
               <h1 className="display mt-8 max-w-4xl text-[clamp(4.5rem,10vw,8.5rem)] leading-[0.82]">
                 {profile.displayName || `@${profile.handle}`}
               </h1>
@@ -121,12 +123,12 @@ export default function CreatorPage() {
 
             <aside className="flex flex-col justify-between border-t border-black/20 py-8 lg:border-l-0 lg:border-t-0 lg:py-20 lg:pl-10">
               <div>
-                <p className="eyebrow text-mist-600">All-time support</p>
+                <p className="eyebrow text-mist-600">{t("allTimeSupport")}</p>
                 <p className="mt-4 font-mono text-5xl font-bold tracking-[-0.08em] text-mint-500">
                   {formatTokenAmount(headline.raised, headline.token.decimals)}
                 </p>
                 <p className="mt-1 font-mono text-xs uppercase tracking-[0.08em] text-mist-500">
-                  {headline.token.symbol} raised
+                  {t("tokenRaised", { symbol: headline.token.symbol })}
                 </p>
                 {totals.slice(1).map((entry) => (
                   <p
@@ -139,7 +141,7 @@ export default function CreatorPage() {
                 ))}
               </div>
               <div className="mt-10 border-t border-black/20 pt-4">
-                <p className="eyebrow text-mist-600">Payout address</p>
+                <p className="eyebrow text-mist-600">{t("payoutAddress")}</p>
                 <p className="mt-2 font-mono text-xs text-mist-500">
                   {shortAddress(profile.owner, 7)}
                 </p>
@@ -151,8 +153,8 @@ export default function CreatorPage() {
         <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-24">
           <div className="mb-8 flex items-end justify-between border-t border-black pt-5">
             <div>
-              <p className="eyebrow text-grape-400">Active / {active.length.toString().padStart(2, "0")}</p>
-              <h2 className="display mt-3 text-5xl">Current goals</h2>
+              <p className="eyebrow text-grape-400">{t("activeCount", { count: active.length.toString().padStart(2, "0") })}</p>
+              <h2 className="display mt-3 text-5xl">{t("currentGoals")}</h2>
             </div>
           </div>
 
@@ -163,7 +165,7 @@ export default function CreatorPage() {
             </div>
           ) : active.length === 0 ? (
             <div className="border-y border-black/20 py-12 text-sm text-mist-500">
-              No active goals right now.
+              {t("noActiveGoals")}
             </div>
           ) : (
             <div className="grid gap-px bg-black/20 sm:grid-cols-2 lg:grid-cols-3">
@@ -176,7 +178,7 @@ export default function CreatorPage() {
           {past.length > 0 && (
             <section className="mt-16">
               <div className="mb-6 border-t border-black/40 pt-4">
-                <p className="eyebrow text-mist-500">Archive / {past.length.toString().padStart(2, "0")}</p>
+                <p className="eyebrow text-mist-500">{t("archiveCount", { count: past.length.toString().padStart(2, "0") })}</p>
               </div>
               <div className="grid gap-px bg-black/20 opacity-65 sm:grid-cols-2 lg:grid-cols-3">
                 {past.map((goal) => (

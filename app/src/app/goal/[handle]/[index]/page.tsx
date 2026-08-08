@@ -29,8 +29,10 @@ import {
   fetchRecentDonations,
   type KadiRpc,
 } from "@/lib/queries";
+import { useLanguage } from "@/lib/i18n";
 
 export default function GoalPage() {
+  const { language, t } = useLanguage();
   const params = useParams<{ handle: string; index: string }>();
   const handle = params.handle;
   const index = BigInt(params.index ?? "0");
@@ -95,10 +97,10 @@ export default function GoalPage() {
       <>
         <Nav />
         <main className="mx-auto max-w-7xl px-5 py-24 sm:px-8">
-          <p className="eyebrow text-grape-400">404 / goal</p>
-          <h1 className="display mt-5 text-6xl">This goal is not here.</h1>
+          <p className="eyebrow text-grape-400">{t("goal404")}</p>
+          <h1 className="display mt-5 text-6xl">{t("goalMissing")}</h1>
           <Link href="/" className="mt-7 inline-block text-xs font-bold uppercase tracking-[0.08em] text-grape-400 hover:underline">
-            ← Back to all goals
+            {t("backGoals")}
           </Link>
         </main>
       </>
@@ -106,7 +108,7 @@ export default function GoalPage() {
   }
 
   const data = goal.data.data;
-  const deadline = formatDeadline(unwrapOption(data.deadline));
+  const deadline = formatDeadline(unwrapOption(data.deadline), language);
   const reached = data.raised >= data.target;
   const token = tokenFor(data.mint);
 
@@ -142,7 +144,7 @@ export default function GoalPage() {
             </div>
 
             <aside className="border-t border-black/20 py-8 lg:border-t-0 lg:pl-10">
-              <p className="eyebrow text-mist-600">Progress</p>
+              <p className="eyebrow text-mist-600">{t("progress")}</p>
               <p className="mt-5 font-mono text-[clamp(3rem,5vw,5rem)] font-bold leading-none tracking-[-0.08em]">
                 {Math.round(percent(data.raised, data.target))}%
               </p>
@@ -154,15 +156,15 @@ export default function GoalPage() {
                     {token.symbol}
                   </span>
                   <span className="text-mist-500">
-                    of {formatTokenAmount(data.target, token.decimals)}
+                    {t("of", { amount: formatTokenAmount(data.target, token.decimals) })}
                   </span>
                 </div>
               </div>
               <div className="mt-10 grid grid-cols-3 gap-px bg-black/20 border border-black/20">
                 {[
-                  [data.donationCount.toString(), "Donations"],
-                  [data.supporterCount.toString(), "Supporters"],
-                  [timeAgo(data.createdAt), "Started"],
+                  [data.donationCount.toString(), t("donations")],
+                  [data.supporterCount.toString(), t("supporters")],
+                  [timeAgo(data.createdAt, language), t("started")],
                 ].map(([value, label]) => (
                   <div key={label} className="bg-ink-850 p-3">
                     <p className="font-mono text-xs font-bold">{value}</p>
@@ -177,10 +179,10 @@ export default function GoalPage() {
         <section className="mx-auto grid max-w-7xl gap-10 px-5 py-12 sm:px-8 sm:py-20 lg:grid-cols-[1.35fr_0.65fr]">
           <div>
             <div className="border-t border-black pt-5">
-              <p className="eyebrow text-grape-400">Donation ledger</p>
-              <h2 className="display mt-3 text-4xl">Recent support</h2>
+              <p className="eyebrow text-grape-400">{t("donationLedger")}</p>
+              <h2 className="display mt-3 text-4xl">{t("recentSupport")}</h2>
               <p className="mt-2 text-xs text-mist-600">
-                Every message below is read from the public transaction log.
+                {t("ledgerBody")}
               </p>
             </div>
 
@@ -188,7 +190,7 @@ export default function GoalPage() {
               {donations.loading ? (
                 <div className="h-28 animate-pulse bg-black/5" />
               ) : (donations.data ?? []).length === 0 ? (
-                <p className="border-y border-black/20 py-8 text-sm text-mist-600">No donations yet.</p>
+                <p className="border-y border-black/20 py-8 text-sm text-mist-600">{t("noDonations")}</p>
               ) : (
                 <ol className="border-t border-black/20">
                   {(donations.data ?? []).map((donation, row) => (
@@ -199,7 +201,7 @@ export default function GoalPage() {
                           {shortAddress(donation.donor, 5)}
                           {donation.isFirstTime && (
                             <span className="ml-2 border border-mint-400 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.08em] text-mint-500">
-                              first time
+                              {t("firstTime")}
                             </span>
                           )}
                         </p>
@@ -212,7 +214,7 @@ export default function GoalPage() {
                           rel="noreferrer"
                           className="mt-2 inline-block font-mono text-[9px] uppercase tracking-[0.08em] text-mist-600 hover:text-grape-400"
                         >
-                          {timeAgo(donation.timestamp)} · view receipt
+                          {timeAgo(donation.timestamp, language)} · {t("viewReceipt")}
                         </a>
                       </div>
                       <span className="font-mono text-sm font-bold text-mint-500">
@@ -241,8 +243,8 @@ export default function GoalPage() {
             )}
 
             <section className="border-t border-black pt-5">
-              <p className="eyebrow text-grape-400">Leaderboard</p>
-              <h2 className="display mt-2 text-3xl">Top supporters</h2>
+              <p className="eyebrow text-grape-400">{t("leaderboard")}</p>
+              <h2 className="display mt-2 text-3xl">{t("topSupporters")}</h2>
               <SupporterList
                 supporters={supporters.data ?? []}
                 decimals={token.decimals}

@@ -36,8 +36,10 @@ import {
   type WithAddress,
 } from "@/lib/queries";
 import { SUPPORTED_TOKENS, isNativeMint, tokenFor } from "@/lib/tokens";
+import { useLanguage } from "@/lib/i18n";
 
 export default function DashboardPage() {
+  const { t } = useLanguage();
   const client = useKadiClient();
   const connected = useWallet();
   const rpc = client.rpc as unknown as KadiRpc;
@@ -61,13 +63,12 @@ export default function DashboardPage() {
       <>
         <Nav />
         <main className="mx-auto max-w-xl px-5 py-28 text-center">
-          <p className="eyebrow text-grape-400">Creator studio</p>
+          <p className="eyebrow text-grape-400">{t("creatorStudio")}</p>
           <h1 className="display mt-5 text-6xl leading-none">
-            Connect your wallet
+            {t("connectWallet")}
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-mist-500">
-            Your wallet is your account. Kadi never holds your keys or your
-            donations.
+            {t("walletIsAccount")}
           </p>
           <div className="mt-6 flex justify-center">
             <WalletButton />
@@ -106,6 +107,7 @@ export default function DashboardPage() {
 // ---------------------------------------------------------------------------
 
 function RegisterForm({ onRegistered }: { onRegistered: () => void }) {
+  const { t } = useLanguage();
   const client = useKadiClient();
   const connected = useWallet();
 
@@ -132,7 +134,7 @@ function RegisterForm({ onRegistered }: { onRegistered: () => void }) {
       await client.sendTransaction([instruction]);
       onRegistered();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Registration failed");
+      setError(err instanceof Error ? err.message : t("registrationFailed"));
     } finally {
       setBusy(false);
     }
@@ -140,17 +142,16 @@ function RegisterForm({ onRegistered }: { onRegistered: () => void }) {
 
   return (
     <div className="mx-auto max-w-2xl border-t border-black pt-6">
-      <p className="eyebrow text-grape-400">Creator registration</p>
+      <p className="eyebrow text-grape-400">{t("creatorRegistration")}</p>
       <h1 className="display mt-5 text-6xl leading-none">
-        Claim your handle
+        {t("claimYourHandle")}
       </h1>
       <p className="mt-1.5 text-sm leading-relaxed text-mist-500">
-        Your handle is your donation page and it is registered on-chain, so it
-        is yours alone.
+        {t("handleBody")}
       </p>
 
       <label className="mb-1.5 mt-6 block text-xs font-medium text-mist-500">
-        Handle
+        {t("handle")}
       </label>
       <div className="flex items-center gap-2">
         <span className="text-sm text-mist-600">kadi.fund/c/</span>
@@ -165,12 +166,12 @@ function RegisterForm({ onRegistered }: { onRegistered: () => void }) {
       </div>
       {handle && !handleValid && (
         <p className="mt-1.5 text-xs text-ember-400">
-          3–32 characters, lowercase letters, digits and underscore only.
+          {t("handleRules")}
         </p>
       )}
 
       <label className="mb-1.5 mt-4 block text-xs font-medium text-mist-500">
-        Display name
+        {t("displayName")}
       </label>
       <input
         value={displayName}
@@ -180,14 +181,14 @@ function RegisterForm({ onRegistered }: { onRegistered: () => void }) {
       />
 
       <label className="mb-1.5 mt-4 block text-xs font-medium text-mist-500">
-        Bio
+        {t("bio")}
       </label>
       <textarea
         value={bio}
         onChange={(event) => setBio(event.target.value)}
         rows={3}
         className="field w-full resize-none px-3 py-2.5 text-sm"
-        placeholder="Streaming from Tbilisi"
+        placeholder={t("goalDescriptionPlaceholder")}
       />
 
       <button
@@ -196,7 +197,7 @@ function RegisterForm({ onRegistered }: { onRegistered: () => void }) {
         disabled={!handleValid || busy}
         className="btn-primary mt-6 w-full px-4 py-3 text-xs font-bold uppercase tracking-[0.08em]"
       >
-        {busy ? "Registering…" : "Claim handle"}
+        {busy ? t("registering") : t("claimHandle")}
       </button>
 
       {error && (
@@ -219,6 +220,7 @@ function CreatorDashboard({
   goalsLoading: boolean;
   onChanged: () => void;
 }) {
+  const { t } = useLanguage();
   const handle = creator.data.handle;
   const overlayUrl = `${APP_URL}/overlay/${handle}`;
   const [copied, setCopied] = useState(false);
@@ -229,7 +231,7 @@ function CreatorDashboard({
       <section className="mb-8 border-y border-black/20 bg-ink-850 p-7 sm:p-10">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="eyebrow mb-4 text-grape-400">Creator studio</p>
+            <p className="eyebrow mb-4 text-grape-400">{t("creatorStudio")}</p>
             <h1 className="display text-5xl leading-none">
               {creator.data.displayName}
             </h1>
@@ -246,13 +248,13 @@ function CreatorDashboard({
               onClick={() => setEditing((value) => !value)}
               className="btn-secondary px-4 py-2 text-xs font-bold uppercase tracking-[0.06em]"
             >
-              {editing ? "Close" : "Edit profile"}
+              {editing ? t("close") : t("editProfile")}
             </button>
             <Link
               href={`/c/${handle}`}
               className="btn-secondary px-4 py-2 text-xs font-bold uppercase tracking-[0.06em]"
             >
-              View public page
+              {t("viewPublicPage")}
             </Link>
           </div>
         </div>
@@ -269,11 +271,10 @@ function CreatorDashboard({
 
         <div className="mt-8 border-t border-black/20 bg-ink-900 p-4">
           <p className="text-xs font-medium text-mist-500">
-            OBS browser source
+            {t("obsSource")}
           </p>
           <p className="mt-1 text-xs leading-relaxed text-mist-600">
-            Add this as a Browser source at 1920×1080 with a transparent
-            background. Alerts fire straight from the chain.
+            {t("obsBody")}
           </p>
           <div className="mt-3 flex items-center gap-2">
             <code className="flex-1 truncate border border-black/10 bg-ink-950 px-3 py-2 font-mono text-xs text-mist-300">
@@ -288,20 +289,20 @@ function CreatorDashboard({
               }}
               className="shrink-0 border border-black/25 px-3 py-2 text-xs font-bold uppercase tracking-[0.05em] text-mist-300 hover:border-black"
             >
-              {copied ? "Copied" : "Copy"}
+              {copied ? t("copied") : t("copy")}
             </button>
           </div>
           <p className="mt-3 text-xs text-mist-600">
-            Setting it up?{" "}
+            {t("settingUp")}{" "}
             <a
               href={`${overlayUrl}?test=1`}
               target="_blank"
               rel="noreferrer"
               className="text-grape-400 hover:underline"
             >
-              Open with a test-alert button
+              {t("openTestAlert")}
             </a>{" "}
-            to check it works before going live.
+            {t("testBeforeLive")}
           </p>
         </div>
       </section>
@@ -313,15 +314,15 @@ function CreatorDashboard({
       />
 
       <div className="mb-4 mt-12 border-t border-black pt-5">
-        <p className="eyebrow text-grape-400">Portfolio</p>
-        <h2 className="display mt-2 text-4xl">Your goals</h2>
+        <p className="eyebrow text-grape-400">{t("portfolio")}</p>
+        <h2 className="display mt-2 text-4xl">{t("yourGoals")}</h2>
       </div>
 
       {goalsLoading ? (
         <div className="card h-32 animate-pulse opacity-50" />
       ) : goals.length === 0 ? (
         <div className="card p-8 text-center text-sm text-mist-500">
-          No goals yet — create your first one above.
+          {t("noGoals")}
         </div>
       ) : (
         <div className="space-y-4">
@@ -348,6 +349,7 @@ function EditProfileForm({
   creator: WithAddress<Creator>;
   onSaved: () => void;
 }) {
+  const { t } = useLanguage();
   const client = useKadiClient();
   const connected = useWallet();
 
@@ -380,7 +382,7 @@ function EditProfileForm({
       await client.sendTransaction([instruction]);
       onSaved();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Could not save");
+      setError(err instanceof Error ? err.message : t("couldNotSave"));
     } finally {
       setBusy(false);
     }
@@ -389,7 +391,7 @@ function EditProfileForm({
   return (
     <div className="mt-8 border-t border-black/20 pt-6">
       <label className="mb-1.5 block text-xs font-medium text-mist-500">
-        Display name
+        {t("displayName")}
       </label>
       <input
         value={displayName}
@@ -399,7 +401,7 @@ function EditProfileForm({
       />
 
       <label className="mb-1.5 block text-xs font-medium text-mist-500">
-        Bio
+        {t("bio")}
       </label>
       <textarea
         value={bio}
@@ -410,7 +412,7 @@ function EditProfileForm({
       />
 
       <label className="mb-1.5 block text-xs font-medium text-mist-500">
-        Avatar URL <span className="text-mist-600">(optional)</span>
+        {t("avatarUrl")} <span className="text-mist-600">{t("optional")}</span>
       </label>
       <input
         value={avatarUri}
@@ -426,7 +428,7 @@ function EditProfileForm({
         disabled={!dirty || busy}
         className="btn-primary px-5 py-2.5 text-xs font-bold uppercase tracking-[0.06em]"
       >
-        {busy ? "Saving…" : "Save changes"}
+        {busy ? t("saving") : t("saveChanges")}
       </button>
 
       {error && (
@@ -447,6 +449,7 @@ function CreateGoalForm({
   nextIndex: bigint;
   onCreated: () => void;
 }) {
+  const { t } = useLanguage();
   const client = useKadiClient();
   const connected = useWallet();
 
@@ -508,7 +511,7 @@ function CreateGoalForm({
       setOpen(false);
       onCreated();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Could not create the goal");
+      setError(err instanceof Error ? err.message : t("couldNotCreate"));
     } finally {
       setBusy(false);
     }
@@ -521,29 +524,29 @@ function CreateGoalForm({
         onClick={() => setOpen(true)}
         className="btn-primary w-full px-4 py-3 text-xs font-bold uppercase tracking-[0.08em]"
       >
-        New goal
+        {t("newGoal")}
       </button>
     );
   }
 
   return (
     <div className="card border-black/30 p-6 sm:p-8">
-      <p className="eyebrow text-grape-400">New entry</p>
-      <h2 className="display mb-6 mt-2 text-4xl">New goal</h2>
+      <p className="eyebrow text-grape-400">{t("newEntry")}</p>
+      <h2 className="display mb-6 mt-2 text-4xl">{t("newGoal")}</h2>
 
       <label className="mb-1.5 block text-xs font-medium text-mist-500">
-        Title
+        {t("title")}
       </label>
       <input
         value={title}
         onChange={(event) => setTitle(event.target.value)}
         maxLength={80}
         className="field mb-4 w-full px-3 py-2.5 text-sm"
-        placeholder="New microphone"
+        placeholder={t("goalTitlePlaceholder")}
       />
 
       <label className="mb-1.5 block text-xs font-medium text-mist-500">
-        Description
+        {t("description")}
       </label>
       <textarea
         value={description}
@@ -551,13 +554,13 @@ function CreateGoalForm({
         maxLength={280}
         rows={2}
         className="field mb-4 w-full resize-none px-3 py-2.5 text-sm"
-        placeholder="Upgrading the stream audio"
+        placeholder={t("goalDescriptionPlaceholder")}
       />
 
       {SUPPORTED_TOKENS.length > 1 && (
         <>
           <label className="mb-1.5 block text-xs font-medium text-mist-500">
-            Denomination
+            {t("denomination")}
           </label>
           <div className="mb-4 flex gap-2">
             {SUPPORTED_TOKENS.map((option) => (
@@ -577,14 +580,14 @@ function CreateGoalForm({
           </div>
           <p className="mb-4 -mt-2 text-xs leading-relaxed text-mist-600">
             {isNativeMint(tokenMint)
-              ? "The target moves with the SOL price."
-              : `A ${token.symbol} goal keeps the target fixed in dollar terms.`}
+              ? t("solMoves")
+              : t("tokenFixed", { symbol: token.symbol })}
           </p>
         </>
       )}
 
       <label className="mb-1.5 block text-xs font-medium text-mist-500">
-        Target ({token.symbol})
+        {t("target", { symbol: token.symbol })}
       </label>
       <input
         value={target}
@@ -594,7 +597,7 @@ function CreateGoalForm({
       />
 
       <label className="mb-1.5 block text-xs font-medium text-mist-500">
-        Deadline <span className="text-mist-600">(optional)</span>
+        {t("deadline")} <span className="text-mist-600">{t("optional")}</span>
       </label>
       <input
         type="date"
@@ -604,12 +607,11 @@ function CreateGoalForm({
       />
       {deadlineInPast ? (
         <p className="mb-4 text-xs text-ember-400">
-          The deadline has to be in the future.
+          {t("futureDeadline")}
         </p>
       ) : (
         <p className="mb-5 text-xs text-mist-600">
-          After the deadline the goal stops accepting donations. Leave empty for
-          an open-ended goal.
+          {t("deadlineBody")}
         </p>
       )}
 
@@ -620,14 +622,14 @@ function CreateGoalForm({
           disabled={!valid || busy}
           className="btn-primary flex-1 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.06em]"
         >
-          {busy ? "Creating…" : "Create goal"}
+          {busy ? t("creating") : t("createGoal")}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
           className="btn-secondary px-4 py-2.5 text-xs font-bold uppercase tracking-[0.06em]"
         >
-          Cancel
+          {t("cancel")}
         </button>
       </div>
 
@@ -649,6 +651,7 @@ function GoalRow({
   handle: string;
   onChanged: () => void;
 }) {
+  const { t } = useLanguage();
   const client = useKadiClient();
   const connected = useWallet();
   const rpc = client.rpc as unknown as KadiRpc;
@@ -692,7 +695,7 @@ function GoalRow({
       setSignature(result.context.signature);
       onChanged();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Claim failed");
+      setError(err instanceof Error ? err.message : t("claimFailed"));
     } finally {
       setBusy(null);
     }
@@ -734,8 +737,8 @@ function GoalRow({
           <div className="mt-1 flex items-center gap-2">
             <StatusPill status={data.status} />
             <span className="text-xs text-mist-600">
-              {data.donationCount.toString()} donations ·{" "}
-              {data.supporterCount.toString()} supporters
+              {data.donationCount.toString()} {t("donations")} ·{" "}
+              {data.supporterCount.toString()} {t("supporters")}
             </span>
           </div>
         </div>
@@ -748,7 +751,7 @@ function GoalRow({
           </p>
           <p className="text-xs text-mist-600">
             {formatTokenAmount(data.claimed, token.decimals)} {token.symbol}{" "}
-            claimed
+            {t("claimed")}
           </p>
         </div>
       </div>
@@ -757,7 +760,7 @@ function GoalRow({
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm">
-          <span className="text-mist-500">Available: </span>
+          <span className="text-mist-500">{t("available")} </span>
           <span className="font-semibold text-mint-300">
             {formatTokenAmount(available, token.decimals)} {token.symbol}
           </span>
@@ -774,7 +777,7 @@ function GoalRow({
                 disabled={busy !== null}
                 className="border border-black/25 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.06em] text-mist-400 hover:border-black disabled:opacity-50"
               >
-                {busy === "archive" ? "…" : "Archive"}
+                {busy === "archive" ? "…" : t("archive")}
               </button>
               <button
                 type="button"
@@ -784,7 +787,7 @@ function GoalRow({
                 disabled={busy !== null}
                 className="border border-black/25 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.06em] text-mist-400 hover:border-black disabled:opacity-50"
               >
-                {busy === "complete" ? "…" : "Mark done"}
+                {busy === "complete" ? "…" : t("markDone")}
               </button>
             </>
           )}
@@ -795,7 +798,7 @@ function GoalRow({
               disabled={busy !== null}
               className="border border-black/25 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.06em] text-mist-400 hover:border-black disabled:opacity-50"
             >
-              {busy === "archive" ? "…" : "Reopen"}
+              {busy === "archive" ? "…" : t("reopen")}
             </button>
           )}
           <button
@@ -804,21 +807,21 @@ function GoalRow({
             disabled={busy !== null || available === 0n}
             className="btn-primary px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.06em]"
           >
-            {busy === "claim" ? "Claiming…" : "Claim"}
+            {busy === "claim" ? t("claiming") : t("claim")}
           </button>
         </div>
       </div>
 
       {signature && (
         <p className="mt-3 text-xs text-mint-300">
-          Claimed ·{" "}
+          {t("claimed")} ·{" "}
           <a
             href={explorerTx(signature)}
             target="_blank"
             rel="noreferrer"
             className="underline underline-offset-2"
           >
-            view transaction
+            {t("viewTransaction")}
           </a>
         </p>
       )}

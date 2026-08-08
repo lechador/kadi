@@ -1,8 +1,11 @@
+"use client";
+
 import type { Address } from "@solana/kit";
 
 import type { Supporter } from "@/generated";
 import { formatTokenAmount, shortAddress, timeAgo } from "@/lib/format";
 import type { WithAddress } from "@/lib/queries";
+import { useLanguage } from "@/lib/i18n";
 
 const MEDALS = ["🥇", "🥈", "🥉"];
 
@@ -10,15 +13,16 @@ export function SupporterList({
   supporters,
   decimals = 9,
   symbol = "SOL",
-  emptyMessage = "No supporters yet — be the first.",
+  emptyMessage,
 }: {
   supporters: WithAddress<Supporter>[];
   decimals?: number;
   symbol?: string;
   emptyMessage?: string;
 }) {
+  const { language, t } = useLanguage();
   if (supporters.length === 0) {
-    return <p className="py-6 text-center text-sm text-mist-600">{emptyMessage}</p>;
+    return <p className="py-6 text-center text-sm text-mist-600">{emptyMessage ?? t("noSupporters")}</p>;
   }
 
   return (
@@ -39,8 +43,8 @@ export function SupporterList({
                 {shortAddress(supporter.data.donor as Address, 5)}
               </p>
               <p className="text-xs text-mist-600">
-                {supporter.data.count.toString()}× · last{" "}
-                {timeAgo(supporter.data.lastDonatedAt)}
+                {supporter.data.count.toString()}× · {t("last")}{" "}
+                {timeAgo(supporter.data.lastDonatedAt, language)}
               </p>
             </div>
           </div>

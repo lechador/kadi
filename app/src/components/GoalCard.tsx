@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { unwrapOption } from "@solana/kit";
 
@@ -5,17 +7,19 @@ import { GoalStatus, type Goal } from "@/generated";
 import { formatDeadline, formatTokenAmount, percent } from "@/lib/format";
 import { tokenFor } from "@/lib/tokens";
 import { ProgressBar } from "./ProgressBar";
+import { useLanguage } from "@/lib/i18n";
 
 export function StatusPill({ status }: { status: GoalStatus }) {
+  const { t } = useLanguage();
   const styles: Record<GoalStatus, string> = {
     [GoalStatus.Active]: "border-mint-400 text-mint-500",
     [GoalStatus.Completed]: "border-grape-400 text-grape-500",
     [GoalStatus.Archived]: "border-black/25 text-mist-500",
   };
   const labels: Record<GoalStatus, string> = {
-    [GoalStatus.Active]: "Active",
-    [GoalStatus.Completed]: "Completed",
-    [GoalStatus.Archived]: "Archived",
+    [GoalStatus.Active]: t("active"),
+    [GoalStatus.Completed]: t("completed"),
+    [GoalStatus.Archived]: t("archived"),
   };
 
   return (
@@ -36,7 +40,8 @@ export function GoalCard({
   handle: string;
   showCreator?: boolean;
 }) {
-  const deadline = formatDeadline(unwrapOption(goal.deadline));
+  const { language, t } = useLanguage();
+  const deadline = formatDeadline(unwrapOption(goal.deadline), language);
   const reached = goal.raised >= goal.target;
   const token = tokenFor(goal.mint);
 
@@ -52,7 +57,7 @@ export function GoalCard({
           </span>
         ) : (
           <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-mist-600">
-            Goal {goal.index.toString().padStart(2, "0")}
+            {t("goal")} {goal.index.toString().padStart(2, "0")}
           </span>
         )}
         <StatusPill status={goal.status} />
@@ -87,8 +92,7 @@ export function GoalCard({
 
         <div className="mt-2 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.05em] text-mist-600">
           <span>
-            {goal.supporterCount.toString()} supporter
-            {goal.supporterCount === 1n ? "" : "s"}
+            {goal.supporterCount.toString()} {goal.supporterCount === 1n ? t("supporter") : t("supporters")}
           </span>
           {deadline && <span>· {deadline}</span>}
         </div>

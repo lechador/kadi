@@ -1,4 +1,7 @@
+"use client";
+
 import { percent } from "@/lib/format";
+import { useLanguage } from "@/lib/i18n";
 
 export function ProgressBar({
   raised,
@@ -9,6 +12,7 @@ export function ProgressBar({
   target: bigint;
   className?: string;
 }) {
+  const { t } = useLanguage();
   const pct = percent(raised, target);
   const reached = raised >= target;
 
@@ -19,7 +23,7 @@ export function ProgressBar({
       aria-valuenow={Math.round(pct)}
       aria-valuemin={0}
       aria-valuemax={100}
-      aria-label="Goal progress"
+      aria-label={t("goalProgress")}
     >
       <div
         className={`relative h-full transition-[width] duration-700 ease-out ${

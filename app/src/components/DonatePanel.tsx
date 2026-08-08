@@ -9,6 +9,7 @@ import { formatTokenAmount, parseTokenAmount } from "@/lib/format";
 import { useAsync, useKadiClient, useWallet } from "@/lib/hooks";
 import { fetchTokenBalance, type KadiRpc } from "@/lib/queries";
 import { isNativeMint, tokenFor } from "@/lib/tokens";
+import { useLanguage } from "@/lib/i18n";
 import { SolanaPayQr } from "./SolanaPayQr";
 
 const SOL_PRESETS = ["0.1", "0.5", "1", "5"];
@@ -34,6 +35,7 @@ export function DonatePanel({
   disabled?: boolean;
   onDonated?: () => void;
 }) {
+  const { t } = useLanguage();
   const client = useKadiClient();
   const connected = useWallet();
   const rpc = client.rpc as unknown as KadiRpc;
@@ -109,7 +111,7 @@ export function DonatePanel({
       setMessage("");
       onDonated?.();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Donation failed");
+      setError(err instanceof Error ? err.message : t("donationFailed"));
     } finally {
       setSending(false);
     }
@@ -118,13 +120,13 @@ export function DonatePanel({
   return (
     <div className="card border-black/30 p-5">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="font-semibold">Support this goal</h3>
+        <h3 className="font-semibold">{t("supportGoal")}</h3>
         <button
           type="button"
           onClick={() => setShowQr((value) => !value)}
           className="border-b border-black/30 px-1 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-mist-500 transition-colors hover:border-grape-400 hover:text-grape-400"
         >
-          {showQr ? "Use wallet" : "Scan QR"}
+          {showQr ? t("useWallet") : t("scanQr")}
         </button>
       </div>
 
@@ -140,8 +142,7 @@ export function DonatePanel({
             />
           ) : (
             <p className="px-2 py-6 text-center text-xs leading-relaxed text-mist-600">
-              Solana Pay QR is available for SOL goals. Donate to this{" "}
-              {token.symbol} goal with a connected wallet.
+              {t("qrSolOnly", { symbol: token.symbol })}
             </p>
           )}
         </div>
@@ -165,10 +166,10 @@ export function DonatePanel({
           </div>
 
           <label className="mb-1.5 flex items-center justify-between text-xs font-medium text-mist-500">
-            <span>Amount ({token.symbol})</span>
+            <span>{t("amount", { symbol: token.symbol })}</span>
             {balance.data != null && (
               <span className="font-mono text-mist-600">
-                balance {formatTokenAmount(balance.data, token.decimals)}
+                {t("balance", { amount: formatTokenAmount(balance.data, token.decimals) })}
               </span>
             )}
           </label>
@@ -181,7 +182,7 @@ export function DonatePanel({
           />
 
           <label className="mb-1.5 flex items-center justify-between text-xs font-medium text-mist-500">
-            <span>Message (shown on stream)</span>
+            <span>{t("messageStream")}</span>
             <span
               className={
                 message.length > MAX_MESSAGE
@@ -197,20 +198,20 @@ export function DonatePanel({
             onChange={(event) => setMessage(event.target.value)}
             rows={2}
             className="field mb-3 w-full resize-none px-3 py-2.5 text-sm"
-            placeholder="გამარჯობა! Keep it up 🇬🇪"
+            placeholder={t("messagePlaceholder")}
           />
 
           {split && (
             <div className="mb-4 space-y-1 border-y border-black/20 bg-ink-900 px-3 py-2.5 text-xs">
               <div className="flex justify-between">
-                <span className="text-mist-500">Creator receives</span>
+                <span className="text-mist-500">{t("creatorReceives")}</span>
                 <span className="font-medium text-mint-300">
                   {formatTokenAmount(split.net, token.decimals)} {token.symbol}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-mist-500">
-                  Protocol fee ({(feeBps / 100).toFixed(2)}%)
+                  {t("protocolFee", { fee: (feeBps / 100).toFixed(2) })}
                 </span>
                 <span className="text-mist-500">
                   {formatTokenAmount(split.fee, token.decimals)} {token.symbol}
@@ -226,28 +227,28 @@ export function DonatePanel({
             className="btn-primary w-full px-4 py-3 text-xs font-bold uppercase tracking-[0.08em]"
           >
             {sending
-              ? "Confirming…"
+              ? t("confirming")
               : !connected?.signer
-                ? "Connect a wallet to donate"
+                ? t("connectToDonate")
                 : disabled
-                  ? "Not accepting donations"
+                  ? t("notAccepting")
                   : insufficient
-                    ? `Not enough ${token.symbol}`
-                    : "Donate"}
+                    ? t("notEnough", { symbol: token.symbol })
+                    : t("donate")}
           </button>
         </>
       )}
 
       {signature && (
         <p className="mt-3 text-center text-xs text-mint-300">
-          Donation confirmed ·{" "}
+          {t("donationConfirmed")}{" "}
           <a
             href={explorerTx(signature)}
             target="_blank"
             rel="noreferrer"
             className="underline underline-offset-2"
           >
-            view transaction
+            {t("viewTransaction")}
           </a>
         </p>
       )}

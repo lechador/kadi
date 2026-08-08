@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 
 import { BRAND } from "@/lib/config";
+import { useLanguage } from "@/lib/i18n";
 import { WalletButton } from "./WalletButton";
 
 export function Logo({ className = "" }: { className?: string }) {
@@ -17,6 +20,8 @@ export function Logo({ className = "" }: { className?: string }) {
 }
 
 export function Nav() {
+  const { language, setLanguage, t } = useLanguage();
+
   return (
     <header className="sticky top-0 z-40 border-b border-black/20 bg-ink-950/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 sm:px-8">
@@ -29,14 +34,22 @@ export function Nav() {
             href="/#goals"
             className="hidden px-3 py-2 text-xs font-bold uppercase tracking-[0.08em] text-mist-500 transition-colors hover:text-grape-400 sm:block"
           >
-            Browse
+            {t("browse")}
           </Link>
           <Link
             href="/dashboard"
             className="px-3 py-2 text-xs font-bold uppercase tracking-[0.08em] text-mist-500 transition-colors hover:text-grape-400"
           >
-            For creators
+            {t("forCreators")}
           </Link>
+          <button
+            type="button"
+            onClick={() => setLanguage(language === "ka" ? "en" : "ka")}
+            aria-label={language === "ka" ? "Switch to English" : "ქართულად გადართვა"}
+            className="px-2 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-mist-500 transition-colors hover:text-grape-400"
+          >
+            {language === "ka" ? "EN" : "ქარ"}
+          </button>
           <WalletButton />
         </nav>
       </div>

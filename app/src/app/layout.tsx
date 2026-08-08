@@ -12,18 +12,19 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     metadataBase,
-    title: "Kadi — donations that reach creators whole",
+    title: "Kadi — დონაციები, რომლებიც სრულად აღწევს კრეატორამდე",
     description:
-      "Non-custodial creator donations on Solana. Keep 97.5%, settle instantly, and verify every contribution on-chain.",
+      "არაკასტოდიული დონაციები კრეატორებისთვის Solana-ზე. დაიტოვეთ 97.5%, მიიღეთ თანხა მყისიერად და გადაამოწმეთ ყველა დონაცია ბლოკჩეინზე.",
     openGraph: {
-      title: "Kadi — donations that reach creators whole",
-      description: "Non-custodial. Instant. On-chain.",
-      images: [{ url: "/og.png", width: 1731, height: 909, alt: "Kadi creator donations" }],
+      title: "Kadi — დონაციები კრეატორებისთვის",
+      description: "არაკასტოდიული. მყისიერი. ბლოკჩეინზე.",
+      locale: "ka_GE",
+      images: [{ url: "/og.png", width: 1731, height: 909, alt: "Kadi — დონაციები კრეატორებისთვის" }],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Kadi — donations that reach creators whole",
-      description: "Non-custodial. Instant. On-chain.",
+      title: "Kadi — დონაციები კრეატორებისთვის",
+      description: "არაკასტოდიული. მყისიერი. ბლოკჩეინზე.",
       images: ["/og.png"],
     },
   };
@@ -33,7 +34,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="ka">
       <body className="min-h-screen antialiased">
         <Providers>{children}</Providers>
       </body>

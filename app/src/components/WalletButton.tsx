@@ -10,8 +10,10 @@ import {
 
 import { useKadiClient } from "@/lib/hooks";
 import { shortAddress } from "@/lib/format";
+import { useLanguage } from "@/lib/i18n";
 
 export function WalletButton() {
+  const { t } = useLanguage();
   const client = useKadiClient();
   const wallets = useWallets(client);
   const connected = useConnectedWallet(client);
@@ -56,7 +58,7 @@ export function WalletButton() {
         {address ? (
           <span className="font-mono">{shortAddress(address)}</span>
         ) : (
-          "Connect wallet"
+          t("connectWallet")
         )}
       </button>
 
@@ -74,11 +76,11 @@ export function WalletButton() {
               }}
               className="w-full px-3 py-2 text-left text-sm text-mist-300 hover:bg-black/5"
             >
-              Disconnect
+              {t("disconnect")}
             </button>
           ) : wallets.length === 0 ? (
             <p className="px-3 py-3 text-sm text-mist-500">
-              No Solana wallet detected. Install Phantom, Solflare or Backpack.
+              {t("noWallet")}
             </p>
           ) : (
             wallets.map((wallet) => (
