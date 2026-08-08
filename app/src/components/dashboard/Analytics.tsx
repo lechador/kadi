@@ -37,7 +37,7 @@ function Tile({
   note?: string;
 }) {
   return (
-    <div className="border-t border-black/20 py-4">
+    <div className="border-t border-rule py-4">
       <p className="eyebrow text-mist-600">{label}</p>
       <p className="mt-2 text-2xl font-bold tracking-tight text-mist-100">
         {value}
@@ -79,7 +79,7 @@ export function Analytics({ handle }: { handle: string }) {
 
   if (failed || (data && !data.available)) {
     return (
-      <section className="card border-black/25 p-6 sm:p-8">
+      <section className="card border-rule p-6 sm:p-8">
         <p className="eyebrow text-grape-400">{t("analytics")}</p>
         <p className="mt-3 text-xs leading-relaxed text-mist-600">
           {t("noAnalytics")}
@@ -112,7 +112,7 @@ export function Analytics({ handle }: { handle: string }) {
   );
 
   return (
-    <section className="card border-black/25 p-6 sm:p-8">
+    <section className="card border-rule p-6 sm:p-8">
       <p className="eyebrow text-grape-400">{t("analytics")}</p>
       <h2 className="display mt-2 text-3xl">{t("last30Days")}</h2>
 
@@ -143,7 +143,7 @@ export function Analytics({ handle }: { handle: string }) {
       </div>
 
       {others.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 border-t border-black/20 pt-3 font-mono text-[10px] uppercase tracking-[0.08em] text-mist-600">
+        <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 border-t border-rule pt-3 font-mono text-[10px] uppercase tracking-[0.08em] text-mist-600">
           {others.map((entry) => {
             const token = tokenFor(entry.mint);
             return (
@@ -160,14 +160,14 @@ export function Analytics({ handle }: { handle: string }) {
         {daily.some((point) => point.count > 0) ? (
           <DailyChart points={daily} />
         ) : (
-          <p className="border-y border-black/15 py-8 text-center text-xs text-mist-600">
+          <p className="border-y border-rule-faint py-8 text-center text-xs text-mist-600">
             {t("noDonations")}
           </p>
         )}
       </div>
 
       {supporters.length > 0 && (
-        <div className="mt-8 border-t border-black/20 pt-5">
+        <div className="mt-8 border-t border-rule pt-5">
           <p className="eyebrow text-mist-600">{t("topSupportersAllTime")}</p>
           <SupporterList supporters={supporters} />
         </div>

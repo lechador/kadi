@@ -178,11 +178,11 @@ export default function OverlayPage() {
             key={`${current.signature}-${current.donor}`}
           >
             <div
-              className="border border-black/40 bg-ink-850/95 p-6 backdrop-blur-sm"
+              className="border border-rule-strong bg-ink-850/95 p-6 backdrop-blur-sm"
               style={{ boxShadow: `8px 8px 0 ${settings.accent}` }}
             >
               <p
-                className="eyebrow mb-4 border-b border-black/20 pb-3"
+                className="eyebrow mb-4 border-b border-rule pb-3"
                 style={{ color: settings.accent }}
               >
                 {settings.alertHeading || t("newDonation")}
@@ -219,7 +219,7 @@ export default function OverlayPage() {
       {/* Goal bar */}
       {showBar && trackedGoal && (
         <div className="absolute bottom-10 left-1/2 w-[min(30rem,88vw)] -translate-x-1/2">
-          <div className="border border-black/40 bg-ink-850/95 px-5 py-4 shadow-[5px_5px_0_#171714] backdrop-blur-sm">
+          <div className="border border-rule-strong bg-ink-850/95 px-5 py-4 shadow-[0_10px_34px_-8px_rgba(0,0,0,0.85)] backdrop-blur-sm">
             <div className="mb-2 flex items-baseline justify-between gap-3">
               <span className="truncate text-sm font-medium text-mist-100">
                 {trackedGoal.title}
@@ -267,7 +267,7 @@ export default function OverlayPage() {
               },
             ])
           }
-          className="absolute bottom-3 right-3 border border-black/30 bg-ink-850 px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-mist-300 hover:border-black"
+          className="absolute bottom-3 right-3 border border-rule-strong bg-ink-850 px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-mist-300 hover:border-rule-solid"
         >
           {t("fireTest")}
         </button>

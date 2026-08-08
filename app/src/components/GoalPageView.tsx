@@ -139,7 +139,7 @@ export function GoalPageView({
       <Nav />
 
       <main>
-        <section className="border-b border-black/20 bg-ink-850">
+        <section className="border-b border-rule bg-ink-850">
           <div className="mx-auto max-w-7xl px-5 py-6 sm:px-8">
             <Link
               href={`/c/${goal.handle}`}
@@ -150,7 +150,7 @@ export function GoalPageView({
           </div>
 
           <div className="mx-auto grid max-w-7xl px-5 sm:px-8 lg:grid-cols-[1.35fr_0.65fr]">
-            <div className="pb-12 lg:border-r lg:border-black/20 lg:pr-12 lg:pb-16">
+            <div className="pb-12 lg:border-r lg:border-rule lg:pr-12 lg:pb-16">
               <div className="flex items-center gap-3">
                 <StatusPill status={goal.status} />
                 {deadline && (
@@ -167,7 +167,7 @@ export function GoalPageView({
               )}
             </div>
 
-            <aside className="border-t border-black/20 py-8 lg:border-t-0 lg:pl-10">
+            <aside className="border-t border-rule py-8 lg:border-t-0 lg:pl-10">
               <p className="eyebrow text-mist-600">{t("progress")}</p>
               <p className="mt-5 font-mono text-[clamp(3rem,5vw,5rem)] font-bold leading-none tracking-[-0.08em]">
                 {Math.round(percent(raised, target))}%
@@ -185,7 +185,7 @@ export function GoalPageView({
                   </span>
                 </div>
               </div>
-              <div className="mt-10 grid grid-cols-3 gap-px border border-black/20 bg-black/20">
+              <div className="mt-10 grid grid-cols-3 gap-px border border-rule bg-rule">
                 {[
                   [String(goal.donationCount), t("donations")],
                   [String(goal.supporterCount), t("supporters")],
@@ -208,7 +208,7 @@ export function GoalPageView({
 
         <section className="mx-auto grid max-w-7xl gap-10 px-5 py-12 sm:px-8 sm:py-20 lg:grid-cols-[1.35fr_0.65fr]">
           <div>
-            <div className="border-t border-black pt-5">
+            <div className="border-t border-rule-solid pt-5">
               <p className="eyebrow text-grape-400">{t("donationLedger")}</p>
               <h2 className="display mt-3 text-4xl">{t("recentSupport")}</h2>
               <p className="mt-2 text-xs text-mist-600">{t("ledgerBody")}</p>
@@ -216,15 +216,15 @@ export function GoalPageView({
 
             <div className="mt-6">
               {donations.length === 0 ? (
-                <p className="border-y border-black/20 py-8 text-sm text-mist-600">
+                <p className="border-y border-rule py-8 text-sm text-mist-600">
                   {t("noDonations")}
                 </p>
               ) : (
-                <ol className="border-t border-black/20">
+                <ol className="border-t border-rule">
                   {donations.map((donation, row) => (
                     <li
                       key={`${donation.signature}:${donation.eventIndex}`}
-                      className="grid gap-3 border-b border-black/15 py-5 sm:grid-cols-[3rem_1fr_auto]"
+                      className="grid gap-3 border-b border-rule-faint py-5 sm:grid-cols-[3rem_1fr_auto]"
                     >
                       <span className="font-mono text-[10px] text-mist-600">
                         {String(row + 1).padStart(2, "0")}
@@ -285,7 +285,7 @@ export function GoalPageView({
               />
             )}
 
-            <section className="border-t border-black pt-5">
+            <section className="border-t border-rule-solid pt-5">
               <p className="eyebrow text-grape-400">{t("leaderboard")}</p>
               <h2 className="display mt-2 text-3xl">{t("topSupporters")}</h2>
               <SupporterList

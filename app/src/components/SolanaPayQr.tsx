@@ -45,10 +45,14 @@ export function SolanaPayQr({
 
   useEffect(() => {
     let cancelled = false;
+    // Stays dark-on-light while the rest of the page is dark-on-dark, and sits
+    // on its own light plate below. An inverted QR scans in most modern wallet
+    // cameras and fails in enough of the rest that matching the theme is not
+    // worth a donation that silently does not happen.
     QRCode.toDataURL(solanaPayUrl(handle, index, { amount, message }), {
       width: size * 2,
       margin: 1,
-      color: { dark: "#171714", light: "#faf7f0" },
+      color: { dark: "#0b0b14", light: "#f4f4fb" },
       errorCorrectionLevel: "M",
     })
       .then((url) => {
@@ -66,7 +70,7 @@ export function SolanaPayQr({
   return (
     <div className="flex flex-col items-center gap-3">
       <div
-        className="flex items-center justify-center overflow-hidden border border-black/25 bg-ink-850 p-2"
+        className="flex items-center justify-center overflow-hidden border border-rule-strong bg-[#f4f4fb] p-2"
         style={{ width: size, height: size }}
       >
         {dataUrl ? (

@@ -53,7 +53,7 @@ export function ActivityView({
       <Nav />
 
       <main className="mx-auto max-w-4xl px-5 py-10 sm:px-8 sm:py-14">
-        <div className="border-t border-black pt-5">
+        <div className="border-t border-rule-solid pt-5">
           <div className="flex items-center gap-3">
             <span
               className={`h-2 w-2 ${connected ? "animate-pulse bg-mint-400" : "bg-mist-600"}`}
@@ -71,18 +71,18 @@ export function ActivityView({
         </div>
 
         {!available && (
-          <p className="mt-8 border-y border-black/20 py-8 text-sm leading-relaxed text-mist-500">
+          <p className="mt-8 border-y border-rule py-8 text-sm leading-relaxed text-mist-500">
             {t("activityNeedsIndex")}
           </p>
         )}
 
         {donations.length === 0 && available && (
-          <p className="mt-8 border-y border-black/20 py-10 text-sm text-mist-600">
+          <p className="mt-8 border-y border-rule py-10 text-sm text-mist-600">
             {t("noDonations")}
           </p>
         )}
 
-        <ol className="mt-8 border-t border-black/20">
+        <ol className="mt-8 border-t border-rule">
           {donations.map((donation) => {
             const token = tokenFor(donation.mint);
             const isLive = "live" in donation;
@@ -90,7 +90,7 @@ export function ActivityView({
             return (
               <li
                 key={`${donation.signature}:${donation.eventIndex}`}
-                className={`grid gap-3 border-b border-black/15 py-5 sm:grid-cols-[1fr_auto] ${
+                className={`grid gap-3 border-b border-rule-faint py-5 sm:grid-cols-[1fr_auto] ${
                   isLive ? "alert-enter" : ""
                 }`}
               >

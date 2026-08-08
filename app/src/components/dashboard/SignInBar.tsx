@@ -19,7 +19,7 @@ export function SignInBar() {
 
   if (address && matchesWallet) {
     return (
-      <div className="flex flex-wrap items-center justify-between gap-3 border border-black/20 bg-ink-900 px-4 py-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-3 border border-rule bg-ink-900 px-4 py-2.5">
         <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-mist-600">
           {t("signedInAs", { address: shortAddress(address, 4) })}
         </p>
@@ -35,7 +35,7 @@ export function SignInBar() {
   }
 
   return (
-    <div className="border border-dashed border-black/25 bg-ink-900 px-4 py-4">
+    <div className="border border-dashed border-rule bg-ink-900 px-4 py-4">
       <p className="text-xs leading-relaxed text-mist-500">
         {address && !matchesWallet ? t("walletChanged") : t("signInToEdit")}
       </p>

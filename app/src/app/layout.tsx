@@ -26,9 +26,9 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/og.png",
-        width: 1731,
-        height: 909,
+        url: "/api/og",
+        width: 1200,
+        height: 630,
         alt: "Kadi — დონაციები კრეატორებისთვის",
       },
     ],
@@ -37,9 +37,12 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Kadi — დონაციები კრეატორებისთვის",
     description: "არაკასტოდიული. მყისიერი. ბლოკჩეინზე.",
-    images: ["/og.png"],
+    images: ["/api/og"],
   },
   icons: { icon: "/icon.svg" },
+  // Paints the mobile browser chrome to match the page, so the surface does
+  // not stop at the top of the viewport.
+  themeColor: "#08080f",
 };
 
 export default function RootLayout({

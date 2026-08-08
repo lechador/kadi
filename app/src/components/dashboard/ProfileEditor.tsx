@@ -124,7 +124,7 @@ export function ProfileEditor({
   }
 
   return (
-    <section className="card border-black/25 p-6 sm:p-8">
+    <section className="card border-rule p-6 sm:p-8">
       <p className="eyebrow text-grape-400">{t("pageStyle")}</p>
       <h2 className="display mt-2 text-3xl">{t("profileExtrasTitle")}</h2>
       <p className="mt-2 max-w-2xl text-xs leading-relaxed text-mist-600">

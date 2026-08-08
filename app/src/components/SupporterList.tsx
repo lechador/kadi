@@ -28,7 +28,7 @@ export function SupporterList({
   }
 
   return (
-    <ol className="divide-y divide-black/10">
+    <ol className="divide-y divide-rule-faint">
       {supporters.map((supporter, rank) => (
         <li
           key={supporter.donor}

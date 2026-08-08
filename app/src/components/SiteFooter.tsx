@@ -8,7 +8,7 @@ export function SiteFooter() {
   const { t } = useLanguage();
 
   return (
-    <footer className="border-t border-black/20 bg-ink-850">
+    <footer className="border-t border-rule bg-ink-850">
       <div className="mx-auto grid max-w-7xl gap-6 px-5 py-9 sm:px-8 md:grid-cols-[1fr_auto]">
         <div>
           <p className="display text-2xl leading-none">Kadi — ნაკადი</p>
@@ -36,7 +36,7 @@ export function SiteFooter() {
           </a>
         </nav>
       </div>
-      <div className="mx-auto max-w-7xl border-t border-black/20 px-5 py-4 font-mono text-[10px] uppercase tracking-[0.08em] text-mist-600 sm:px-8">
+      <div className="mx-auto max-w-7xl border-t border-rule px-5 py-4 font-mono text-[10px] uppercase tracking-[0.08em] text-mist-600 sm:px-8">
         {t("footer")}
       </div>
     </footer>

@@ -58,14 +58,23 @@ export async function ogFonts(): Promise<OgFont[]> {
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
+/// Mirrors the site's tokens. A share card is usually the first thing anyone
+/// sees of Kadi — in a chat window, before the site — so it has to be the same
+/// object as the page it links to, not a differently-coloured cousin.
 export const PALETTE = {
-  paper: "#f3efe6",
-  paperLight: "#faf7f0",
-  ink: "#171714",
-  red: "#c63d2f",
-  green: "#2e5b45",
-  muted: "#68635a",
-  rule: "rgba(23, 23, 20, 0.18)",
+  paper: "#08080f",
+  paperLight: "#14141f",
+  ink: "#f2f2fa",
+  red: "#b083ff",
+  green: "#2ee6a0",
+  muted: "#8a8aa6",
+  rule: "rgba(178, 178, 220, 0.22)",
+  track: "rgba(178, 178, 220, 0.14)",
+  /// The violet bloom the page carries behind its masthead. Satori has no
+  /// radial-gradient support worth relying on, so the card fakes it with a
+  /// linear one across the top edge.
+  bloom:
+    "linear-gradient(160deg, rgba(139, 92, 246, 0.30), rgba(8, 8, 15, 0) 55%)",
 };
 
 /// Satori has no text-overflow, so anything that could exceed the card is

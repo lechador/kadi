@@ -23,7 +23,7 @@ export function Nav() {
   const { language, setLanguage, t } = useLanguage();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-black/20 bg-ink-950/95 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-rule bg-ink-950/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 sm:px-8">
         <Link href="/" className="transition-opacity hover:opacity-60">
           <Logo />

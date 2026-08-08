@@ -15,7 +15,7 @@ import { useLanguage } from "@/lib/i18n";
 const STATUS_STYLES: Record<number, string> = {
   0: "border-mint-400 text-mint-500",
   1: "border-grape-400 text-grape-500",
-  2: "border-black/25 text-mist-500",
+  2: "border-rule text-mist-500",
 };
 
 export function StatusPill({ status }: { status: number }) {
@@ -83,7 +83,7 @@ export function GoalCard({
         </p>
       )}
 
-      <div className="mt-auto border-t border-black/15 pt-4 group-hover:border-white/25">
+      <div className="mt-auto border-t border-rule-faint pt-4 group-hover:border-rule-strong">
         <ProgressBar raised={raised} target={target} className="mb-3" />
         <div className="flex items-baseline justify-between gap-3">
           <span className="text-sm text-mist-100">

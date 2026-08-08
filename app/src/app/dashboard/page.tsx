@@ -146,7 +146,7 @@ function RegisterForm({ onRegistered }: { onRegistered: () => void }) {
   }
 
   return (
-    <div className="mx-auto max-w-2xl border-t border-black pt-6">
+    <div className="mx-auto max-w-2xl border-t border-rule-solid pt-6">
       <p className="eyebrow text-grape-400">{t("creatorRegistration")}</p>
       <h1 className="display mt-5 text-6xl leading-none">
         {t("claimYourHandle")}
@@ -264,7 +264,7 @@ function CreatorDashboard({
 
   return (
     <>
-      <section className="mb-8 border-y border-black/20 bg-ink-850 p-7 sm:p-10">
+      <section className="mb-8 border-y border-rule bg-ink-850 p-7 sm:p-10">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="eyebrow mb-4 text-grape-400">{t("creatorStudio")}</p>
@@ -305,7 +305,7 @@ function CreatorDashboard({
           />
         )}
 
-        <div className="mt-8 border-t border-black/20 bg-ink-900 p-4">
+        <div className="mt-8 border-t border-rule bg-ink-900 p-4">
           <p className="text-xs font-medium text-mist-500">
             {t("obsSource")}
           </p>
@@ -313,7 +313,7 @@ function CreatorDashboard({
             {t("obsBody")}
           </p>
           <div className="mt-3 flex items-center gap-2">
-            <code className="flex-1 truncate border border-black/10 bg-ink-950 px-3 py-2 font-mono text-xs text-mist-300">
+            <code className="flex-1 truncate border border-rule-faint bg-ink-950 px-3 py-2 font-mono text-xs text-mist-300">
               {overlayUrl}
             </code>
             <button
@@ -323,7 +323,7 @@ function CreatorDashboard({
                 setCopied(true);
                 setTimeout(() => setCopied(false), 1600);
               }}
-              className="shrink-0 border border-black/25 px-3 py-2 text-xs font-bold uppercase tracking-[0.05em] text-mist-300 hover:border-black"
+              className="shrink-0 border border-rule px-3 py-2 text-xs font-bold uppercase tracking-[0.05em] text-mist-300 hover:border-rule-solid"
             >
               {copied ? t("copied") : t("copy")}
             </button>
@@ -351,7 +351,7 @@ function CreatorDashboard({
         onCreated={onChanged}
       />
 
-      <div className="mb-4 mt-12 border-t border-black pt-5">
+      <div className="mb-4 mt-12 border-t border-rule-solid pt-5">
         <p className="eyebrow text-grape-400">{t("portfolio")}</p>
         <h2 className="display mt-2 text-4xl">{t("yourGoals")}</h2>
       </div>
@@ -427,7 +427,7 @@ function EditProfileForm({
   }
 
   return (
-    <div className="mt-8 border-t border-black/20 pt-6">
+    <div className="mt-8 border-t border-rule pt-6">
       <label className="mb-1.5 block text-xs font-medium text-mist-500">
         {t("displayName")}
       </label>
@@ -568,7 +568,7 @@ function CreateGoalForm({
   }
 
   return (
-    <div className="card border-black/30 p-6 sm:p-8">
+    <div className="card border-rule-strong p-6 sm:p-8">
       <p className="eyebrow text-grape-400">{t("newEntry")}</p>
       <h2 className="display mb-6 mt-2 text-4xl">{t("newGoal")}</h2>
 
@@ -608,8 +608,8 @@ function CreateGoalForm({
                 onClick={() => setTokenMint(option.mint)}
                 className={`flex-1 border px-3 py-2 font-mono text-xs font-bold transition-colors ${
                   tokenMint === option.mint
-                    ? "border-grape-500 bg-grape-500 text-white"
-                    : "border-black/20 text-mist-500 hover:border-black hover:text-mist-100"
+                    ? "border-grape-400 bg-grape-600 text-white"
+                    : "border-rule text-mist-500 hover:border-rule-solid hover:text-mist-100"
                 }`}
               >
                 {option.symbol}
@@ -763,7 +763,7 @@ function GoalRow({
   const available = claimable.data ?? 0n;
 
   return (
-    <div className="card border-black/25 p-5 sm:p-6">
+    <div className="card border-rule p-5 sm:p-6">
       <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
         <div>
           <Link
@@ -813,7 +813,7 @@ function GoalRow({
                   void changeStatus(GoalStatus.Archived, "archive")
                 }
                 disabled={busy !== null}
-                className="border border-black/25 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.06em] text-mist-400 hover:border-black disabled:opacity-50"
+                className="border border-rule px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.06em] text-mist-400 hover:border-rule-solid disabled:opacity-50"
               >
                 {busy === "archive" ? "…" : t("archive")}
               </button>
@@ -823,7 +823,7 @@ function GoalRow({
                   void changeStatus(GoalStatus.Completed, "complete")
                 }
                 disabled={busy !== null}
-                className="border border-black/25 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.06em] text-mist-400 hover:border-black disabled:opacity-50"
+                className="border border-rule px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.06em] text-mist-400 hover:border-rule-solid disabled:opacity-50"
               >
                 {busy === "complete" ? "…" : t("markDone")}
               </button>
@@ -834,7 +834,7 @@ function GoalRow({
               type="button"
               onClick={() => void changeStatus(GoalStatus.Active, "archive")}
               disabled={busy !== null}
-              className="border border-black/25 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.06em] text-mist-400 hover:border-black disabled:opacity-50"
+              className="border border-rule px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.06em] text-mist-400 hover:border-rule-solid disabled:opacity-50"
             >
               {busy === "archive" ? "…" : t("reopen")}
             </button>

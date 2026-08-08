@@ -27,9 +27,9 @@ export function LiveTicker({ initial }: { initial: DonationView[] }) {
     .slice(0, 12);
 
   return (
-    <section className="border-b border-black/20">
+    <section className="border-b border-rule">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <div className="flex items-center gap-3 border-b border-black/10 py-3">
+        <div className="flex items-center gap-3 border-b border-rule-faint py-3">
           <span
             className={`h-2 w-2 shrink-0 ${
               connected ? "animate-pulse bg-mint-400" : "bg-mist-600"
@@ -46,7 +46,7 @@ export function LiveTicker({ initial }: { initial: DonationView[] }) {
           </Link>
         </div>
 
-        <ul className="flex snap-x gap-px overflow-x-auto bg-black/10 py-px">
+        <ul className="flex snap-x gap-px overflow-x-auto bg-ink-900 py-px">
           {donations.map((donation) => {
             const token = tokenFor(donation.mint);
             return (

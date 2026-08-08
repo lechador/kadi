@@ -28,7 +28,7 @@ export function ChainError({
       </p>
 
       {localnet && (
-        <div className="mt-4 border-t border-black/15 pt-4">
+        <div className="mt-4 border-t border-rule-faint pt-4">
           <p className="text-sm text-mist-500">
             {t("localValidator")}
           </p>

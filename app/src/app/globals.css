@@ -1,31 +1,68 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+   Kadi — dark, high-voltage.
+
+   The token *names* are inherited and read backwards: `ink-*` are surfaces and
+   `mist-*` is text, with mist-100 the most prominent. Renaming them would touch
+   every component for no visual gain, so the names stay and the values move.
+
+   Three hues, each with one job, so nothing has to be decoded twice:
+     grape  — the brand. Actions, links, anything the eye should go to first.
+     mint   — money that arrived. Amounts, progress, confirmations.
+     ice    — the machine talking. Live sockets, indexer state, system chrome.
+
+   Neon on a dark surface glares if it is left unmanaged, so the accents are
+   used as thin edges, small type and glow — never as large fills behind text.
+   --------------------------------------------------------------------------- */
+
 @theme {
-  --color-ink-950: #f3efe6;
-  --color-ink-900: #eae4d9;
-  --color-ink-850: #faf7f0;
-  --color-ink-800: #ded7cb;
-  --color-ink-700: #c6bcad;
-  --color-ink-600: #a49a8c;
+  /* Surfaces, darkest to lightest. Tinted violet rather than neutral grey so
+     the accents look like they belong to the surface instead of sitting on it. */
+  --color-ink-950: #08080f;
+  --color-ink-900: #0c0c16;
+  --color-ink-850: #14141f;
+  --color-ink-800: #1b1b29;
+  --color-ink-700: #262638;
+  --color-ink-600: #34344a;
 
-  --color-mist-100: #171714;
-  --color-mist-300: #35352f;
-  --color-mist-400: #504e47;
-  --color-mist-500: #68635a;
-  --color-mist-600: #8b8478;
+  /* Text, most prominent first. */
+  --color-mist-100: #f2f2fa;
+  --color-mist-300: #cdcde0;
+  --color-mist-400: #a6a6c0;
+  --color-mist-500: #8a8aa6;
+  /* mist-600 carries the 9–10px eyebrows and timestamps, so it is set by the
+     4.5:1 floor for small text on the raised surface (4.54:1), not by taste.
+     The obvious darker step looked better and measured 3.55:1. */
+  --color-mist-600: #7c7c9c;
 
-  --color-grape-400: #c63d2f;
-  --color-grape-500: #b83327;
-  --color-grape-600: #97291f;
+  /* Brand violet. 400 is the text-safe step, 500 the fill, 600 the pressed. */
+  --color-grape-400: #b083ff;
+  --color-grape-500: #8b5cf6;
+  --color-grape-600: #6d3ce0;
 
-  --color-mint-300: #36755a;
-  --color-mint-400: #2e674e;
-  --color-mint-500: #24513e;
+  /* Money green. Every step is legible on the dark surface, because all three
+     are used as text somewhere. */
+  --color-mint-300: #6ef7c4;
+  --color-mint-400: #2ee6a0;
+  --color-mint-500: #14d693;
 
-  --color-ember-400: #b42318;
+  /* System cyan, for live and machine states. */
+  --color-ice-400: #46d7f0;
+  --color-ice-500: #22b8d6;
+
+  --color-ember-400: #ff6b6b;
+
+  /* Rules. Hairlines on a dark surface have to be *lighter* than it, which is
+     why every `border-black/n` in the components became one of these. */
+  --color-rule-faint: rgba(178, 178, 220, 0.08);
+  --color-rule: rgba(178, 178, 220, 0.14);
+  --color-rule-strong: rgba(178, 178, 220, 0.24);
+  --color-rule-solid: rgba(178, 178, 220, 0.42);
 
   --font-sans:
-    Arial, "Helvetica Neue", "Noto Sans Georgian", "DejaVu Sans", sans-serif;
+    ui-sans-serif, "Inter", -apple-system, "Segoe UI", "Noto Sans Georgian",
+    "DejaVu Sans", sans-serif;
   --font-serif:
     Iowan Old Style, Baskerville, "Times New Roman", "Noto Serif Georgian",
     serif;
@@ -34,18 +71,24 @@
 }
 
 :root {
-  color-scheme: light;
-  --paper: #f3efe6;
-  --paper-light: #faf7f0;
-  --ink: #171714;
-  --red: #c63d2f;
-  --green: #2e5b45;
-  --rule: rgba(23, 23, 20, 0.18);
+  color-scheme: dark;
+  --surface: #08080f;
+  --surface-raised: #14141f;
+  --surface-sunken: #0c0c16;
+  --ink: #f2f2fa;
+  --accent: #8b5cf6;
+  --accent-bright: #b083ff;
+  --accent-deep: #6d3ce0;
+  --money: #14d693;
+  --live: #46d7f0;
+  --rule: rgba(178, 178, 220, 0.14);
 
-  /* Chart marks only. A step more saturated than --green because a 9px column
-     needs more chroma than a word does to read as coloured rather than grey —
-     the text mint measures below the chroma floor at bar width. */
-  --chart-green: #1f7a52;
+  /* Chart marks only, and deliberately not --money.
+     Dark-mode marks belong in OKLCH L 0.48–0.67; the interface green sits at
+     0.80, which glares as a filled shape even though it is right as text. This
+     step is validated against the raised surface for lightness, chroma and
+     contrast — see the note in DailyChart. */
+  --chart-green: #10a37a;
 }
 
 * {
@@ -58,7 +101,7 @@ html {
 
 html,
 body {
-  background: var(--paper);
+  background: var(--surface);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
 }
@@ -66,17 +109,28 @@ body {
 body {
   min-width: 320px;
   font-family: var(--font-sans);
-  background-image: repeating-linear-gradient(
-    90deg,
-    transparent 0,
-    transparent calc(25vw - 1px),
-    rgba(23, 23, 20, 0.035) 25vw
-  );
+
+  /* A faint engineering grid, plus one violet bloom behind the masthead. The
+     grid is what stops a near-black page from reading as an empty void; the
+     bloom is the only large area of colour on the page. */
+  background-image:
+    radial-gradient(
+      120rem 40rem at 50% -18rem,
+      rgba(139, 92, 246, 0.16),
+      transparent 70%
+    ),
+    linear-gradient(rgba(178, 178, 220, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(178, 178, 220, 0.035) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    100% 4rem,
+    4rem 100%;
+  background-attachment: fixed, scroll, scroll;
 }
 
 ::selection {
-  background: var(--red);
-  color: var(--paper-light);
+  background: var(--accent);
+  color: #fff;
 }
 
 a,
@@ -91,6 +145,11 @@ a {
   outline-offset: 4px;
 }
 
+:focus-visible {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 3px;
+}
+
 .display {
   font-family: var(--font-serif);
   font-weight: 400;
@@ -101,129 +160,165 @@ a {
   font-family: var(--font-mono);
   font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   line-height: 1.2;
   text-transform: uppercase;
 }
 
 .card {
-  background: color-mix(in oklab, var(--paper-light) 88%, transparent);
+  background: color-mix(in oklab, var(--surface-raised) 82%, transparent);
   border: 1px solid var(--rule);
   border-radius: 0;
+  backdrop-filter: blur(6px);
 }
 
 .card-hover {
   transition:
-    background-color 160ms ease,
-    color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
     transform 160ms ease;
 }
 
+/* Hover lights the edge rather than repainting the fill. Inverting a card to a
+   solid accent — the light theme's move — would put body text on a saturated
+   violet, which no step of this ramp carries at 4.5:1. */
 .card-hover:hover {
-  background: var(--ink);
-  color: var(--paper-light);
-  transform: translate(-3px, -3px);
-  box-shadow: 3px 3px 0 var(--red);
+  border-color: color-mix(in oklab, var(--accent-bright) 55%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--accent) 30%, transparent),
+    0 0 28px -6px color-mix(in oklab, var(--accent) 55%, transparent);
+  transform: translateY(-3px);
 }
 
-.card-hover:hover .text-mist-500,
-.card-hover:hover .text-mist-600,
-.card-hover:hover .text-mist-100 {
-  color: var(--paper-light);
+.card-hover:hover .display {
+  color: var(--accent-bright);
 }
 
+/* The fill is the *deep* violet, not the bright one: white on --accent
+   measures 4.23:1, which is fine for a headline and not for 12px bold uppercase
+   button text. The neon lives in the border and the glow, where it costs
+   nothing to read. */
 .btn-primary {
-  background: var(--red);
-  border: 1px solid var(--red);
+  background: var(--accent-deep);
+  border: 1px solid color-mix(in oklab, var(--accent-bright) 70%, transparent);
   border-radius: 0;
-  color: #fffaf1;
+  color: #fff;
+  box-shadow: 0 0 20px -8px var(--accent);
   transition:
     background-color 150ms ease,
-    color 150ms ease,
-    transform 150ms ease,
-    box-shadow 150ms ease;
+    box-shadow 150ms ease,
+    transform 150ms ease;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--ink);
-  border-color: var(--ink);
-  transform: translate(-2px, -2px);
-  box-shadow: 2px 2px 0 var(--red);
+  background: var(--accent-bright);
+  color: #16061f;
+  box-shadow: 0 0 26px -4px var(--accent-bright);
+  transform: translateY(-2px);
 }
 
 .btn-primary:active:not(:disabled) {
-  transform: translate(0, 0);
-  box-shadow: none;
+  transform: translateY(0);
+  box-shadow: 0 0 12px -6px var(--accent);
 }
 
 .btn-primary:disabled {
   cursor: not-allowed;
-  opacity: 0.4;
+  opacity: 0.38;
+  box-shadow: none;
 }
 
 .btn-secondary {
-  border: 1px solid var(--ink);
+  border: 1px solid var(--rule-strong, rgba(178, 178, 220, 0.24));
   border-radius: 0;
   color: var(--ink);
+  background: transparent;
   transition:
     background-color 150ms ease,
+    border-color 150ms ease,
     color 150ms ease;
 }
 
 .btn-secondary:hover {
-  background: var(--ink);
-  color: var(--paper-light);
+  border-color: color-mix(in oklab, var(--accent-bright) 60%, transparent);
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+  color: var(--accent-bright);
 }
 
 .field {
-  background: var(--paper-light);
-  border: 0;
-  border-bottom: 1px solid var(--ink);
+  background: var(--surface-sunken);
+  border: 1px solid transparent;
+  border-bottom: 1px solid rgba(178, 178, 220, 0.24);
   border-radius: 0;
   color: var(--ink);
   transition:
     background-color 150ms ease,
-    border-color 150ms ease;
+    border-color 150ms ease,
+    box-shadow 150ms ease;
 }
 
 .field:focus {
-  background: #fff;
-  border-color: var(--red);
+  background: #0a0a13;
+  border-bottom-color: var(--accent-bright);
+  box-shadow: 0 1px 0 0 var(--accent-bright);
   outline: 2px solid transparent;
 }
 
 .field::placeholder {
-  color: #9b9386;
+  color: #5c5c76;
 }
 
-.aurora {
-  background: var(--paper-light);
+select.field option {
+  background: var(--surface-raised);
+  color: var(--ink);
+}
+
+/* The one large colour field on the site: an accent-tinted panel instead of the
+   light theme's inverted white block, which on a near-black page read as a
+   hole punched through it. */
+.panel-accent {
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in oklab, var(--accent) 22%, transparent),
+      transparent 62%
+    ),
+    var(--surface-raised);
+  border-block: 1px solid var(--rule);
+}
+
+.glow-text {
+  text-shadow: 0 0 22px color-mix(in oklab, currentColor 55%, transparent);
 }
 
 .rule-top {
-  border-top: 1px solid var(--ink);
+  border-top: 1px solid rgba(178, 178, 220, 0.42);
 }
 
 .ledger-dots {
-  background-image: radial-gradient(circle, rgba(23, 23, 20, 0.25) 1px, transparent 1px);
+  background-image: radial-gradient(
+    circle,
+    rgba(178, 178, 220, 0.22) 1px,
+    transparent 1px
+  );
   background-size: 8px 8px;
 }
 
 @keyframes alert-in {
   0% {
     opacity: 0;
-    transform: translateY(18px) rotate(-1deg);
+    transform: translateY(18px) scale(0.98);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) rotate(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 @keyframes alert-out {
   to {
     opacity: 0;
-    transform: translateY(-14px) rotate(1deg);
+    transform: translateY(-14px) scale(0.99);
   }
 }
 
@@ -246,13 +341,21 @@ a {
 
 .shimmer {
   width: 40%;
-  background: rgba(255, 255, 255, 0.28);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.55),
+    transparent
+  );
   animation: shimmer 2.2s linear infinite;
 }
 
 @media (max-width: 720px) {
   body {
-    background-image: none;
+    background-size:
+      100% 100%,
+      100% 3rem,
+      3rem 100%;
   }
 }
 

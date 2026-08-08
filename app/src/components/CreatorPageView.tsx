@@ -52,19 +52,19 @@ export function CreatorPageView({
           <img
             src={profile.bannerUrl}
             alt=""
-            className="h-40 w-full border-b border-black/20 object-cover sm:h-56"
+            className="h-40 w-full border-b border-rule object-cover sm:h-56"
           />
         )}
 
-        <section className="border-b border-black/20 bg-ink-850">
+        <section className="border-b border-rule bg-ink-850">
           <div className="mx-auto grid max-w-7xl px-5 sm:px-8 lg:grid-cols-[1.4fr_0.6fr]">
-            <div className="py-14 lg:border-r lg:border-black/20 lg:pr-12 lg:py-20">
+            <div className="py-14 lg:border-r lg:border-rule lg:pr-12 lg:py-20">
               <div className="flex flex-wrap items-center gap-3">
                 <p className="eyebrow text-grape-400">
                   {t("creatorPage", { handle: creator.handle })}
                 </p>
                 {profile?.category && (
-                  <span className="border border-black/20 px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.1em] text-mist-500">
+                  <span className="border border-rule px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.1em] text-mist-500">
                     {t(`category_${profile.category}`)}
                   </span>
                 )}
@@ -81,7 +81,7 @@ export function CreatorPageView({
                   <img
                     src={avatar}
                     alt=""
-                    className="h-20 w-20 shrink-0 border border-black/20 object-cover sm:h-28 sm:w-28"
+                    className="h-20 w-20 shrink-0 border border-rule object-cover sm:h-28 sm:w-28"
                   />
                 )}
                 <h1 className="display max-w-4xl text-[clamp(3rem,8vw,7rem)] leading-[0.85]">
@@ -106,7 +106,7 @@ export function CreatorPageView({
               </div>
             </div>
 
-            <aside className="flex flex-col justify-between border-t border-black/20 py-8 lg:border-l-0 lg:border-t-0 lg:py-20 lg:pl-10">
+            <aside className="flex flex-col justify-between border-t border-rule py-8 lg:border-l-0 lg:border-t-0 lg:py-20 lg:pl-10">
               <div>
                 <p className="eyebrow text-mist-600">{t("allTimeSupport")}</p>
                 <p className="mt-4 font-mono text-5xl font-bold tracking-[-0.08em] text-mint-500">
@@ -125,7 +125,7 @@ export function CreatorPageView({
                   </p>
                 ))}
               </div>
-              <div className="mt-10 border-t border-black/20 pt-4">
+              <div className="mt-10 border-t border-rule pt-4">
                 <p className="eyebrow text-mist-600">{t("payoutAddress")}</p>
                 <p className="mt-2 font-mono text-xs text-mist-500">
                   {shortAddress(creator.owner, 7)}
@@ -136,7 +136,7 @@ export function CreatorPageView({
         </section>
 
         <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-24">
-          <div className="mb-8 flex items-end justify-between border-t border-black pt-5">
+          <div className="mb-8 flex items-end justify-between border-t border-rule-solid pt-5">
             <div>
               <p className="eyebrow text-grape-400">
                 {t("activeCount", {
@@ -148,11 +148,11 @@ export function CreatorPageView({
           </div>
 
           {active.length === 0 ? (
-            <div className="border-y border-black/20 py-12 text-sm text-mist-500">
+            <div className="border-y border-rule py-12 text-sm text-mist-500">
               {t("noActiveGoals")}
             </div>
           ) : (
-            <div className="grid gap-px bg-black/20 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-px bg-rule sm:grid-cols-2 lg:grid-cols-3">
               {active.map((goal) => (
                 <GoalCard key={goal.address} goal={goal} />
               ))}
@@ -161,14 +161,14 @@ export function CreatorPageView({
 
           {past.length > 0 && (
             <section className="mt-16">
-              <div className="mb-6 border-t border-black/40 pt-4">
+              <div className="mb-6 border-t border-rule-strong pt-4">
                 <p className="eyebrow text-mist-500">
                   {t("archiveCount", {
                     count: String(past.length).padStart(2, "0"),
                   })}
                 </p>
               </div>
-              <div className="grid gap-px bg-black/20 opacity-65 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-px bg-rule opacity-65 sm:grid-cols-2 lg:grid-cols-3">
                 {past.map((goal) => (
                   <GoalCard key={goal.address} goal={goal} />
                 ))}

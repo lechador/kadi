@@ -105,7 +105,7 @@ export function OverlayEditor({
   }
 
   return (
-    <section className="card border-black/25 p-6 sm:p-8">
+    <section className="card border-rule p-6 sm:p-8">
       <p className="eyebrow text-grape-400">{t("obsSource")}</p>
       <h2 className="display mt-2 text-3xl">{t("overlaySettings")}</h2>
       <p className="mt-2 max-w-2xl text-xs leading-relaxed text-mist-600">
@@ -145,7 +145,7 @@ export function OverlayEditor({
               type="color"
               value={settings.accent}
               onChange={(event) => set("accent", event.target.value)}
-              className="h-10 w-16 border border-black/20 bg-transparent"
+              className="h-10 w-16 border border-rule bg-transparent"
             />
             <code className="font-mono text-xs text-mist-500">
               {settings.accent}
@@ -219,7 +219,7 @@ export function OverlayEditor({
           </span>
         </label>
 
-        <div className="sm:col-span-2 border-t border-black/15 pt-5">
+        <div className="sm:col-span-2 border-t border-rule-faint pt-5">
           <label className="flex items-center gap-3">
             <input
               type="checkbox"
@@ -242,7 +242,7 @@ export function OverlayEditor({
           )}
         </div>
 
-        <div className="sm:col-span-2 border-t border-black/15 pt-5">
+        <div className="sm:col-span-2 border-t border-rule-faint pt-5">
           <label className="flex items-center gap-3">
             <input
               type="checkbox"

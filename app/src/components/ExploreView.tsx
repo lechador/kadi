@@ -39,8 +39,8 @@ function Chip({
       onClick={onClick}
       className={`border px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] transition-colors ${
         active
-          ? "border-grape-500 bg-grape-500 text-white"
-          : "border-black/20 text-mist-500 hover:border-black hover:text-mist-100"
+          ? "border-grape-400 bg-grape-600 text-white"
+          : "border-rule text-mist-500 hover:border-rule-solid hover:text-mist-100"
       }`}
     >
       {children}
@@ -121,7 +121,7 @@ export function ExploreView({
       <Nav />
 
       <main className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
-        <div className="border-t border-black pt-5">
+        <div className="border-t border-rule-solid pt-5">
           <p className="eyebrow text-grape-400">{t("discover")}</p>
           <h1 className="display mt-3 text-5xl leading-none sm:text-6xl">
             {t("exploreTitle")}
@@ -131,7 +131,7 @@ export function ExploreView({
           </p>
         </div>
 
-        <div className="mt-8 space-y-4 border-y border-black/20 py-5">
+        <div className="mt-8 space-y-4 border-y border-rule py-5">
           <div className="flex items-center gap-3">
             <input
               value={search}
@@ -225,14 +225,14 @@ export function ExploreView({
         </div>
 
         {creators.length > 0 && (
-          <div className="mt-6 border-b border-black/15 pb-5">
+          <div className="mt-6 border-b border-rule-faint pb-5">
             <p className="eyebrow mb-3 text-mist-600">{t("creators")}</p>
             <div className="flex flex-wrap gap-2">
               {creators.map((creator) => (
                 <Link
                   key={creator.address}
                   href={`/c/${creator.handle}`}
-                  className="flex items-center gap-2 border border-black/20 px-3 py-2 transition-colors hover:border-black"
+                  className="flex items-center gap-2 border border-rule px-3 py-2 transition-colors hover:border-rule-solid"
                 >
                   <span className="text-sm text-mist-100">
                     {creator.displayName || `@${creator.handle}`}
@@ -252,12 +252,12 @@ export function ExploreView({
         </p>
 
         {goals.length === 0 ? (
-          <div className="border-y border-black/20 py-16 text-center">
+          <div className="border-y border-rule py-16 text-center">
             <p className="display text-3xl">{t("noResults")}</p>
             <p className="mt-3 text-sm text-mist-500">{t("noResultsBody")}</p>
           </div>
         ) : (
-          <div className="mt-5 grid gap-px bg-black/20 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-5 grid gap-px bg-rule sm:grid-cols-2 lg:grid-cols-3">
             {goals.map((goal) => (
               <GoalCard key={goal.address} goal={goal} showCreator />
             ))}
@@ -265,7 +265,7 @@ export function ExploreView({
         )}
 
         {pages > 1 && (
-          <nav className="mt-10 flex items-center justify-between border-t border-black/20 pt-5">
+          <nav className="mt-10 flex items-center justify-between border-t border-rule pt-5">
             <PageLink
               disabled={page <= 1}
               label={`← ${t("previous")}`}
@@ -282,7 +282,7 @@ export function ExploreView({
           </nav>
         )}
 
-        <div className="mt-14 border-t border-black/20 pt-6">
+        <div className="mt-14 border-t border-rule pt-6">
           <Link
             href="/dashboard"
             className="text-xs font-bold uppercase tracking-[0.08em] text-grape-400 hover:underline"
@@ -311,7 +311,7 @@ function PageLink({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="border border-black/25 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.08em] text-mist-400 hover:border-black disabled:opacity-35"
+      className="border border-rule px-4 py-2 text-[10px] font-bold uppercase tracking-[0.08em] text-mist-400 hover:border-rule-solid disabled:opacity-35"
     >
       {label}
     </button>

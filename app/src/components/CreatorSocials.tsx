@@ -52,7 +52,7 @@ export function CreatorSocials({ profile }: { profile: ProfileView | null }) {
           href={link.href}
           target="_blank"
           rel="noreferrer nofollow"
-          className="border border-black/20 px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-mist-500 transition-colors hover:border-black hover:text-mist-100"
+          className="border border-rule px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-mist-500 transition-colors hover:border-rule-solid hover:text-mist-100"
         >
           {link.label}
         </a>
@@ -60,7 +60,7 @@ export function CreatorSocials({ profile }: { profile: ProfileView | null }) {
       {profile.discord && (
         // Shown, not linked: a Discord value can be a username or an invite
         // code, and guessing wrong sends people somewhere unintended.
-        <span className="border border-dashed border-black/20 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.08em] text-mist-600">
+        <span className="border border-dashed border-rule px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.08em] text-mist-600">
           Discord: {profile.discord}
         </span>
       )}

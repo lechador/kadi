@@ -89,13 +89,14 @@ export function DailyChart({ points }: { points: DailyPointView[] }) {
           aria-label={t("dailyChartLabel")}
           onMouseLeave={() => setHovered(null)}
         >
-          {/* Recessive reference lines: the peak and the baseline. */}
+          {/* Recessive reference lines: the peak and the baseline. One step off
+              the surface — lighter than it, since the surface is the dark one. */}
           <line
             x1={0}
             y1={6}
             x2={WIDTH}
             y2={6}
-            stroke="rgba(23,23,20,0.12)"
+            stroke="rgba(178,178,220,0.12)"
             strokeWidth={1}
           />
           <line
@@ -103,7 +104,7 @@ export function DailyChart({ points }: { points: DailyPointView[] }) {
             y1={HEIGHT - 1}
             x2={WIDTH}
             y2={HEIGHT - 1}
-            stroke="rgba(23,23,20,0.28)"
+            stroke="rgba(178,178,220,0.30)"
             strokeWidth={1}
           />
 
@@ -154,7 +155,7 @@ export function DailyChart({ points }: { points: DailyPointView[] }) {
 
         {active && (
           <div
-            className="pointer-events-none absolute top-1/3 z-10 -translate-x-1/2 whitespace-nowrap border border-black/25 bg-ink-850 px-2.5 py-1.5 shadow-[3px_3px_0_rgba(23,23,20,0.15)]"
+            className="pointer-events-none absolute top-1/3 z-10 -translate-x-1/2 whitespace-nowrap border border-rule bg-ink-850 px-2.5 py-1.5 shadow-[0_10px_28px_-10px_rgba(0,0,0,0.9)]"
             style={{
               left: `${Math.min(Math.max(((hovered! + 0.5) / points.length) * 100, 8), 92)}%`,
             }}
@@ -180,13 +181,13 @@ export function DailyChart({ points }: { points: DailyPointView[] }) {
       <button
         type="button"
         onClick={() => setShowTable((value) => !value)}
-        className="mt-3 border-b border-black/25 text-[10px] font-bold uppercase tracking-[0.08em] text-mist-500 hover:border-grape-400 hover:text-grape-400"
+        className="mt-3 border-b border-rule text-[10px] font-bold uppercase tracking-[0.08em] text-mist-500 hover:border-grape-400 hover:text-grape-400"
       >
         {showTable ? t("hideTable") : t("showTable")}
       </button>
 
       {showTable && (
-        <div className="mt-3 max-h-64 overflow-y-auto border border-black/15">
+        <div className="mt-3 max-h-64 overflow-y-auto border border-rule-faint">
           <table className="w-full text-left text-xs">
             <thead className="sticky top-0 bg-ink-900">
               <tr className="font-mono text-[9px] uppercase tracking-[0.08em] text-mist-600">
@@ -202,7 +203,7 @@ export function DailyChart({ points }: { points: DailyPointView[] }) {
                 .filter((point) => point.count > 0)
                 .reverse()
                 .map((point) => (
-                  <tr key={point.day} className="border-t border-black/10">
+                  <tr key={point.day} className="border-t border-rule-faint">
                     <td className="px-3 py-1.5 text-mist-500">
                       {dayLabel(point.day)}
                     </td>

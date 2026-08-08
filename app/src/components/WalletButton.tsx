@@ -51,7 +51,7 @@ export function WalletButton() {
         aria-expanded={open}
         className={
           address
-            ? "border border-black/25 bg-ink-850 px-4 py-2 font-mono text-xs font-bold text-mist-100 hover:border-black"
+            ? "border border-rule bg-ink-850 px-4 py-2 font-mono text-xs font-bold text-mist-100 hover:border-rule-solid"
             : "btn-primary px-4 py-2 text-xs font-bold uppercase tracking-[0.06em]"
         }
       >
@@ -65,7 +65,7 @@ export function WalletButton() {
       {open && (
         <div
           role="menu"
-          className="card absolute right-0 z-50 mt-2 w-64 border-black/40 p-2 shadow-[5px_5px_0_#171714]"
+          className="card absolute right-0 z-50 mt-2 w-64 border-rule-strong p-2 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.9)]"
         >
           {connected ? (
             <button
@@ -74,7 +74,7 @@ export function WalletButton() {
                 void disconnect.dispatch();
                 setOpen(false);
               }}
-              className="w-full px-3 py-2 text-left text-sm text-mist-300 hover:bg-black/5"
+              className="w-full px-3 py-2 text-left text-sm text-mist-300 hover:bg-ink-900"
             >
               {t("disconnect")}
             </button>
@@ -91,7 +91,7 @@ export function WalletButton() {
                   void connect.dispatch(wallet);
                   setOpen(false);
                 }}
-                className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm text-mist-100 hover:bg-black/5"
+                className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm text-mist-100 hover:bg-ink-900"
               >
                 {typeof wallet.icon === "string" && (
                   // eslint-disable-next-line @next/next/no-img-element

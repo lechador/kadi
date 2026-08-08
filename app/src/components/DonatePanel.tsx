@@ -123,13 +123,13 @@ export function DonatePanel({
   }
 
   return (
-    <div className="card border-black/30 p-5">
+    <div className="card border-rule-strong p-5">
       <div className="mb-4 flex items-center justify-between">
         <h3 className="font-semibold">{t("supportGoal")}</h3>
         <button
           type="button"
           onClick={() => setShowQr((value) => !value)}
-          className="border-b border-black/30 px-1 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-mist-500 transition-colors hover:border-grape-400 hover:text-grape-400"
+          className="border-b border-rule-strong px-1 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-mist-500 transition-colors hover:border-grape-400 hover:text-grape-400"
         >
           {showQr ? t("useWallet") : t("scanQr")}
         </button>
@@ -161,8 +161,8 @@ export function DonatePanel({
                 onClick={() => setAmount(preset)}
                 className={`flex-1 border px-2 py-2 font-mono text-xs font-bold transition-colors ${
                   amount === preset
-                    ? "border-grape-500 bg-grape-500 text-white"
-                    : "border-black/20 text-mist-500 hover:border-black hover:text-mist-100"
+                    ? "border-grape-400 bg-grape-600 text-white"
+                    : "border-rule text-mist-500 hover:border-rule-solid hover:text-mist-100"
                 }`}
               >
                 {preset}
@@ -207,7 +207,7 @@ export function DonatePanel({
           />
 
           {split && (
-            <div className="mb-4 space-y-1 border-y border-black/20 bg-ink-900 px-3 py-2.5 text-xs">
+            <div className="mb-4 space-y-1 border-y border-rule bg-ink-900 px-3 py-2.5 text-xs">
               <div className="flex justify-between">
                 <span className="text-mist-500">{t("creatorReceives")}</span>
                 <span className="font-medium text-mint-300">

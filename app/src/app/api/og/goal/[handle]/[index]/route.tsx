@@ -63,7 +63,8 @@ export async function GET(_request: Request, context: Context) {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: PALETTE.paper,
+          backgroundColor: PALETTE.paper,
+          backgroundImage: PALETTE.bloom,
           color: PALETTE.ink,
           fontFamily: "Noto Sans Georgian",
           padding: 64,
@@ -133,7 +134,7 @@ export async function GET(_request: Request, context: Context) {
             </span>
           </div>
 
-          <div style={{ display: "flex", width: "100%", height: 16, background: "rgba(23,23,20,0.12)" }}>
+          <div style={{ display: "flex", width: "100%", height: 16, background: PALETTE.track }}>
             <div
               style={{
                 display: "flex",
