@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 import { APP_URL } from "@/lib/config";
 import Providers from "./providers";
@@ -40,9 +40,14 @@ export const metadata: Metadata = {
     images: ["/api/og"],
   },
   icons: { icon: "/icon.svg" },
-  // Paints the mobile browser chrome to match the page, so the surface does
-  // not stop at the top of the viewport.
+};
+
+/// Paints the mobile browser chrome to match the page, so the surface does not
+/// stop at the top of the viewport. Lives on `viewport` rather than `metadata`
+/// — Next moved it there, and setting it on `metadata` is silently ignored.
+export const viewport: Viewport = {
   themeColor: "#08080f",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({
